@@ -1,0 +1,5 @@
+
+#features
+Passing questions in admin mode for testing
+
+autocomplete the rest bc of few shot prompting on the first challenges

@@ -3,8 +3,8 @@ import { getAnthropicStreamingCompletion } from '../anthropic';
 
 export async function POST(req: Request) {
   try {
-    const { prompt } = await req.json();
-    const stream = await getAnthropicStreamingCompletion(prompt);
+    const { prompt, systemPrompt } = await req.json();
+    const stream = await getAnthropicStreamingCompletion(prompt, systemPrompt);
 
     if (!stream) {
       throw new Error('No stream returned from Anthropic API');
