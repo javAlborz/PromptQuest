@@ -1,0 +1,33 @@
+ToDo.txt
+
+# Configuration files
+postcss.config.mjs
+tailwind.config.ts
+tsconfig.json
+next.config.mjs
+next-env.d.ts
+components.json
+.eslintrc.json
+
+# Assets
+app/favicon.ico
+app/fonts/GeistVF.woff
+app/fonts/GeistMonoVF.woff
+
+# Node modules (commonly ignored)
+node_modules/
+
+# Build output (commonly ignored)
+.next/
+out/
+
+# Environment variables (commonly ignored)
+.env*.local
+
+# IDE files (commonly ignored)
+.vscode/
+.idea/
+
+# OS files (commonly ignored)
+.DS_Store
+Thumbs.db

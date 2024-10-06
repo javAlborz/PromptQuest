@@ -3,3 +3,13 @@
 Passing questions in admin mode for testing
 
 autocomplete the rest bc of few shot prompting on the first challenges
+
+
+
+#prompting
+
+I need some help with my next app. I am attempting to make an educational game for prompt-engineering best practices. The user will advance through decks of tasks by correctly solving prompt engineering challenges. If a user is answering wrong they will loose some of their health bar and revert back to the start of the game if they loose all health.
+
+I have implemented a component in text-adventure-game.tsx based on the jupyter notebooks 00-02 in /game-notebooks/ so far. I would like to populate my game decks with the assignments asked in these notebooks, in their respective "Exercises" sections. Start by looking through the notebook exercises and how the answers are evaluated, as I want my game to be evaluated as close as possible as how it it's counterpart is evaluated in the notebook. 
+
+For my first level I need to implement exercise 1.2 from the notebooks. It should appear underneath as a second deck underneath the "Counting to Three" deck when it is completed. Both decks needs to be completed in order to advance to the next level
