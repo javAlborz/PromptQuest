@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input"
-import { Heart } from "lucide-react";
+import { Challenge } from './Challenge';
+import { GameStatus } from './GameStatus';
+import { GameHeader } from './GameHeader';
+import { AdminControls } from './AdminControls';
 
-interface Challenge {
+interface ChallengeType {
   question: string;
   task: string;
   initialPrompt: string;
@@ -15,7 +16,7 @@ interface Challenge {
   hint?: string;
 }
 
-const challenges: Challenge[] = [
+const challenges: ChallengeType[] = [
   // Level 1 (Notebook 1)
   {
     question: "Counting to Three",
@@ -123,7 +124,7 @@ export function TextAdventureGameComponent() {
         },
         body: JSON.stringify({ 
           prompt: userPrompts[index],
-          systemPrompt: systemPrompts[index] || undefined
+          systemPrompt: systemPrompts[index]
         }),
       });
 
@@ -191,145 +192,68 @@ export function TextAdventureGameComponent() {
     setShowHints(challenges.slice(0, 2).map(() => false));
   };
 
-  if (gameStatus === "won") {
-    return (
-      <Card className="w-[350px] mx-auto mt-10">
-        <CardHeader>
-          <CardTitle>Congratulations!</CardTitle>
-          <CardDescription>You've completed all levels!</CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <Button onClick={resetGame}>Play Again</Button>
-        </CardFooter>
-      </Card>
-    );
-  }
-
-  if (gameStatus === "lost") {
-    return (
-      <Card className="w-[350px] mx-auto mt-10">
-        <CardHeader>
-          <CardTitle>Game Over</CardTitle>
-          <CardDescription>You've run out of lives. Better luck next time!</CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <Button onClick={resetGame}>Try Again</Button>
-        </CardFooter>
-      </Card>
-    );
+  if (gameStatus !== "playing") {
+    return <GameStatus status={gameStatus} onResetGame={resetGame} />;
   }
 
   return (
     <div className="container mx-auto p-4">
-      <div className="text-center mb-4">
-        <h1 className="text-2xl font-bold mb-2">Prompt Engineering Challenge</h1>
-        <div className="flex justify-center space-x-1">
-          {[...Array(3)].map((_, i) => (
-            <Heart key={i} className={`w-6 h-6 ${i < lives ? "text-red-500 fill-red-500" : "text-gray-300"}`} />
-          ))}
-        </div>
-        <p className="mt-2">Level: {currentLevel + 1} / {challenges.length / 2}</p>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setIsAdminMode(!isAdminMode)}
-          className="mt-2"
-        >
-          {isAdminMode ? "Disable Admin Mode" : "Enable Admin Mode"}
-        </Button>
-      </div>
-      {isAdminMode && (
-        <div className="mt-4 text-center">
-          <label htmlFor="level-select" className="mr-2">Skip to level:</label>
-          <select
-            id="level-select"
-            value={currentLevel + 1}
-            onChange={(e) => {
-              const newLevel = parseInt(e.target.value) - 1;
-              setCurrentLevel(newLevel);
-              setUserPrompts(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(c => c.initialPrompt));
-              setSystemPrompts(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(c => c.initialSystemPrompt || ""));
-              setApiResponses(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(() => ""));
-              setIsCorrect(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(() => false));
-              setShowHints(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(() => false));
-            }}
-          >
-            {[...Array(challenges.length / 2)].map((_, i) => (
-              <option key={i} value={i + 1}>
-                {i + 1}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+      <GameHeader
+        lives={lives}
+        currentLevel={currentLevel}
+        totalLevels={challenges.length / 2}
+        isAdminMode={isAdminMode}
+        onToggleAdminMode={() => setIsAdminMode(!isAdminMode)}
+      />
+      <AdminControls
+        isAdminMode={isAdminMode}
+        currentLevel={currentLevel}
+        totalLevels={challenges.length / 2}
+        onLevelChange={(newLevel) => {
+          setCurrentLevel(newLevel);
+          setUserPrompts(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(c => c.initialPrompt));
+          setSystemPrompts(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(c => c.initialSystemPrompt || ""));
+          setApiResponses(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(() => ""));
+          setIsCorrect(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(() => false));
+          setShowHints(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(() => false));
+        }}
+      />
       <div className="flex flex-col space-y-4">
         {[0, 1].map((index) => {
           const challengeIndex = currentLevel * 2 + index;
           const isImmutableUserPrompt = (challengeIndex === 1 && currentLevel === 0) || (challengeIndex === 2 && currentLevel === 1);
-          console.log(`Challenge ${challengeIndex}: isImmutableUserPrompt = ${isImmutableUserPrompt}`);
+          const hasSystemPrompt = challengeIndex === 1 || challengeIndex === 2;
           return (
-            <Card key={index} className={`w-full ${isCorrect[challengeIndex] ? 'bg-green-100' : ''}`}>
-              <CardHeader>
-                <CardTitle>{challenges[challengeIndex].question}</CardTitle>
-                <CardDescription>{challenges[challengeIndex].task}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {challenges[challengeIndex].initialSystemPrompt !== undefined && (
-                  <div className="mb-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">System Prompt:</label>
-                    <Input
-                      placeholder="Enter your system prompt here"
-                      value={systemPrompts[challengeIndex]}
-                      onChange={(e) => {
-                        const newSystemPrompts = [...systemPrompts];
-                        newSystemPrompts[challengeIndex] = e.target.value;
-                        setSystemPrompts(newSystemPrompts);
-                      }}
-                    />
-                  </div>
-                )}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">User Prompt:</label>
-                  <Input
-                    placeholder="Enter your user prompt here"
-                    value={userPrompts[challengeIndex]}
-                    onChange={(e) => {
-                      const newUserPrompts = [...userPrompts];
-                      newUserPrompts[challengeIndex] = e.target.value;
-                      setUserPrompts(newUserPrompts);
-                    }}
-                    readOnly={isImmutableUserPrompt}
-                    className={isImmutableUserPrompt ? "bg-gray-100" : ""}
-                  />
-                </div>
-                {apiResponses[challengeIndex] && (
-                  <div className="mt-4">
-                    <h4 className="font-semibold">API Response:</h4>
-                    <p className="text-sm">{apiResponses[challengeIndex]}</p>
-                  </div>
-                )}
-                {showHints[challengeIndex] && (
-                  <p className="text-sm text-muted-foreground mt-2">Hint: {challenges[challengeIndex].hint}</p>
-                )}
-              </CardContent>
-              <CardFooter className="flex flex-col space-y-2">
-                <div className="flex justify-between w-full">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      const newShowHints = [...showHints];
-                      newShowHints[challengeIndex] = !newShowHints[challengeIndex];
-                      setShowHints(newShowHints);
-                    }}
-                  >
-                    {showHints[challengeIndex] ? "Hide Hint" : "Show Hint"}
-                  </Button>
-                  <Button onClick={() => handleSubmit(challengeIndex)} disabled={isLoading[challengeIndex]}>
-                    {isLoading[challengeIndex] ? "Submitting..." : "Submit"}
-                  </Button>
-                </div>
-              </CardFooter>
-            </Card>
+            <Challenge
+              key={index}
+              question={challenges[challengeIndex].question}
+              task={challenges[challengeIndex].task}
+              systemPrompt={systemPrompts[challengeIndex]}
+              userPrompt={userPrompts[challengeIndex]}
+              apiResponse={apiResponses[challengeIndex]}
+              isCorrect={isCorrect[challengeIndex]}
+              isLoading={isLoading[challengeIndex]}
+              showHint={showHints[challengeIndex]}
+              hint={challenges[challengeIndex].hint}
+              isImmutableUserPrompt={isImmutableUserPrompt}
+              hasSystemPrompt={hasSystemPrompt}
+              onSystemPromptChange={(value) => {
+                const newSystemPrompts = [...systemPrompts];
+                newSystemPrompts[challengeIndex] = value;
+                setSystemPrompts(newSystemPrompts);
+              }}
+              onUserPromptChange={(value) => {
+                const newUserPrompts = [...userPrompts];
+                newUserPrompts[challengeIndex] = value;
+                setUserPrompts(newUserPrompts);
+              }}
+              onSubmit={() => handleSubmit(challengeIndex)}
+              onToggleHint={() => {
+                const newShowHints = [...showHints];
+                newShowHints[challengeIndex] = !newShowHints[challengeIndex];
+                setShowHints(newShowHints);
+              }}
+            />
           );
         })}
       </div>
