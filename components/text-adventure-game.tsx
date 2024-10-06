@@ -69,6 +69,7 @@ export function TextAdventureGameComponent() {
   const [showHints, setShowHints] = useState(challenges.map(() => false));
   const [isCorrect, setIsCorrect] = useState(challenges.map(() => false));
   const [isStreamComplete, setIsStreamComplete] = useState(challenges.map(() => false));
+  const [isAdminMode, setIsAdminMode] = useState(false);
 
   useEffect(() => {
     console.log("Current level:", currentLevel);
@@ -82,7 +83,7 @@ export function TextAdventureGameComponent() {
       newIsCorrect[index] = correct;
       setIsCorrect(newIsCorrect);
 
-      if (!correct) {
+      if (!correct && !isAdminMode) {
         setLives(prevLives => {
           const newLives = prevLives - 1;
           if (newLives === 0) {
@@ -95,7 +96,7 @@ export function TextAdventureGameComponent() {
       newIsStreamComplete[index] = false;
       setIsStreamComplete(newIsStreamComplete);
     }
-  }, [isStreamComplete, apiResponses]);
+  }, [isStreamComplete, apiResponses, isAdminMode]);
 
   const handleSubmit = async (index: number) => {
     const newIsLoading = [...isLoading];
@@ -165,7 +166,7 @@ export function TextAdventureGameComponent() {
   };
 
   const advanceToNextLevel = () => {
-    if (isCorrect.slice(currentLevel * 2, (currentLevel + 1) * 2).every(Boolean)) {
+    if (isAdminMode || isCorrect.slice(currentLevel * 2, (currentLevel + 1) * 2).every(Boolean)) {
       if (currentLevel === challenges.length / 2 - 1) {
         setGameStatus("won");
       } else {
@@ -228,7 +229,39 @@ export function TextAdventureGameComponent() {
           ))}
         </div>
         <p className="mt-2">Level: {currentLevel + 1} / {challenges.length / 2}</p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setIsAdminMode(!isAdminMode)}
+          className="mt-2"
+        >
+          {isAdminMode ? "Disable Admin Mode" : "Enable Admin Mode"}
+        </Button>
       </div>
+      {isAdminMode && (
+        <div className="mt-4 text-center">
+          <label htmlFor="level-select" className="mr-2">Skip to level:</label>
+          <select
+            id="level-select"
+            value={currentLevel + 1}
+            onChange={(e) => {
+              const newLevel = parseInt(e.target.value) - 1;
+              setCurrentLevel(newLevel);
+              setUserPrompts(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(c => c.initialPrompt));
+              setSystemPrompts(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(c => c.initialSystemPrompt || ""));
+              setApiResponses(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(() => ""));
+              setIsCorrect(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(() => false));
+              setShowHints(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(() => false));
+            }}
+          >
+            {[...Array(challenges.length / 2)].map((_, i) => (
+              <option key={i} value={i + 1}>
+                {i + 1}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="flex flex-col space-y-4">
         {[0, 1].map((index) => {
           const challengeIndex = currentLevel * 2 + index;
@@ -300,7 +333,7 @@ export function TextAdventureGameComponent() {
           );
         })}
       </div>
-      {isCorrect.slice(currentLevel * 2, (currentLevel + 1) * 2).every(Boolean) && (
+      {(isAdminMode || isCorrect.slice(currentLevel * 2, (currentLevel + 1) * 2).every(Boolean)) && (
         <div className="mt-4 text-center">
           <Button onClick={advanceToNextLevel} className="w-full max-w-md">
             Next Level
