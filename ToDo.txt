@@ -13,3 +13,13 @@ I need some help with my next app. I am attempting to make an educational game f
 I have implemented a component in text-adventure-game.tsx based on the jupyter notebooks 00-02 in /game-notebooks/ so far. I would like to populate my game decks with the assignments asked in these notebooks, in their respective "Exercises" sections. Start by looking through the notebook exercises and how the answers are evaluated, as I want my game to be evaluated as close as possible as how it it's counterpart is evaluated in the notebook. 
 
 For my first level I need to implement exercise 1.2 from the notebooks. It should appear underneath as a second deck underneath the "Counting to Three" deck when it is completed. Both decks needs to be completed in order to advance to the next level
+
+
+
+#one-liner
+npx ai-digest -i . -o pe-game-summary-work.md --show-output-files && mv pe-game-summary-work.md /mnt/c/Users/W36059/Desktop/
+
+
+
+#problems
+2.5 levels? its supposed a third ex in level 2 (ex 2.3)

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Challenge } from './Challenge';
@@ -56,6 +55,16 @@ const challenges: ChallengeType[] = [
       return response.trim() === "Michael Jordan";
     },
     hint: "Be very specific about the format of the answer you want."
+  },
+  {
+    question: "Write a Long Story",
+    task: "Modify the prompt to make Claude generate a response of at least 800 words.",
+    initialPrompt: "Tell me a story.",
+    evaluation: (response: string) => {
+      const words = response.trim().split(/\s+/).length;
+      return words >= 800;
+    },
+    hint: "Think about asking for a detailed story with multiple characters, plot twists, and vivid descriptions. You can also specify a minimum word count in your prompt."
   }
 ];
 
@@ -63,18 +72,41 @@ export function TextAdventureGameComponent() {
   const [currentLevel, setCurrentLevel] = useState(0);
   const [lives, setLives] = useState(3);
   const [gameStatus, setGameStatus] = useState<"playing" | "won" | "lost">("playing");
-  const [userPrompts, setUserPrompts] = useState(challenges.map(c => c.initialPrompt));
-  const [systemPrompts, setSystemPrompts] = useState(challenges.map(c => c.initialSystemPrompt || ""));
-  const [apiResponses, setApiResponses] = useState(challenges.map(() => ""));
-  const [isLoading, setIsLoading] = useState(challenges.map(() => false));
-  const [showHints, setShowHints] = useState(challenges.map(() => false));
-  const [isCorrect, setIsCorrect] = useState(challenges.map(() => false));
-  const [isStreamComplete, setIsStreamComplete] = useState(challenges.map(() => false));
+  const [userPrompts, setUserPrompts] = useState<string[]>([]);
+  const [systemPrompts, setSystemPrompts] = useState<string[]>([]);
+  const [apiResponses, setApiResponses] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean[]>([]);
+  const [showHints, setShowHints] = useState<boolean[]>([]);
+  const [isCorrect, setIsCorrect] = useState<boolean[]>([]);
+  const [isStreamComplete, setIsStreamComplete] = useState<boolean[]>([]);
   const [isAdminMode, setIsAdminMode] = useState(false);
 
+  const totalLevels = 2;
+  const challengesPerLevel = [2, 3]; // 2 challenges in level 1, 3 challenges in level 2
+
   useEffect(() => {
+    console.log("Game initialized");
+    initializeGameState();
+  }, []);
+
+  useEffect(() => {
+    const startIndex = currentLevel === 0 ? 0 : challengesPerLevel[0];
+    const endIndex = startIndex + challengesPerLevel[currentLevel];
     console.log("Current level:", currentLevel);
-  }, [currentLevel]);
+    console.log("Current challenges:", challenges.slice(startIndex, endIndex));
+    console.log("Current user prompts:", userPrompts.slice(startIndex, endIndex));
+    console.log("Current system prompts:", systemPrompts.slice(startIndex, endIndex));
+  }, [currentLevel, userPrompts, systemPrompts]);
+
+  const initializeGameState = () => {
+    setUserPrompts(challenges.map(c => c.initialPrompt));
+    setSystemPrompts(challenges.map(c => c.initialSystemPrompt || ""));
+    setApiResponses(challenges.map(() => ""));
+    setIsLoading(challenges.map(() => false));
+    setShowHints(challenges.map(() => false));
+    setIsCorrect(challenges.map(() => false));
+    setIsStreamComplete(challenges.map(() => false));
+  };
 
   useEffect(() => {
     if (isStreamComplete.some(Boolean)) {
@@ -167,74 +199,78 @@ export function TextAdventureGameComponent() {
   };
 
   const advanceToNextLevel = () => {
-    if (isAdminMode || isCorrect.slice(currentLevel * 2, (currentLevel + 1) * 2).every(Boolean)) {
-      if (currentLevel === challenges.length / 2 - 1) {
+    const startIndex = currentLevel === 0 ? 0 : challengesPerLevel[0];
+    const endIndex = startIndex + challengesPerLevel[currentLevel];
+    if (isAdminMode || isCorrect.slice(startIndex, endIndex).every(Boolean)) {
+      if (currentLevel === totalLevels - 1) {
         setGameStatus("won");
       } else {
-        setCurrentLevel(currentLevel + 1);
-        setUserPrompts(challenges.slice(currentLevel * 2 + 2, (currentLevel + 1) * 2 + 2).map(c => c.initialPrompt));
-        setSystemPrompts(challenges.slice(currentLevel * 2 + 2, (currentLevel + 1) * 2 + 2).map(c => c.initialSystemPrompt || ""));
-        setApiResponses(challenges.slice(currentLevel * 2 + 2, (currentLevel + 1) * 2 + 2).map(() => ""));
-        setIsCorrect(challenges.slice(currentLevel * 2 + 2, (currentLevel + 1) * 2 + 2).map(() => false));
-        setShowHints(challenges.slice(currentLevel * 2 + 2, (currentLevel + 1) * 2 + 2).map(() => false));
+        const newLevel = currentLevel + 1;
+        setCurrentLevel(newLevel);
+        console.log("Advancing to level:", newLevel);
+        const newStartIndex = newLevel === 0 ? 0 : challengesPerLevel[0];
+        const newEndIndex = newStartIndex + challengesPerLevel[newLevel];
+        console.log("New user prompts:", challenges.slice(newStartIndex, newEndIndex).map(c => c.initialPrompt));
+        console.log("New system prompts:", challenges.slice(newStartIndex, newEndIndex).map(c => c.initialSystemPrompt || ""));
       }
     }
   };
 
   const resetGame = () => {
+    console.log("Resetting game");
     setCurrentLevel(0);
     setLives(3);
     setGameStatus("playing");
-    setUserPrompts(challenges.slice(0, 2).map(c => c.initialPrompt));
-    setSystemPrompts(challenges.slice(0, 2).map(c => c.initialSystemPrompt || ""));
-    setApiResponses(challenges.slice(0, 2).map(() => ""));
-    setIsCorrect(challenges.slice(0, 2).map(() => false));
-    setShowHints(challenges.slice(0, 2).map(() => false));
+    initializeGameState();
   };
 
   if (gameStatus !== "playing") {
     return <GameStatus status={gameStatus} onResetGame={resetGame} />;
   }
 
+  const startIndex = currentLevel === 0 ? 0 : challengesPerLevel[0];
+  const endIndex = startIndex + challengesPerLevel[currentLevel];
+  const currentChallenges = challenges.slice(startIndex, endIndex);
+
   return (
     <div className="container mx-auto p-4">
       <GameHeader
         lives={lives}
-        currentLevel={currentLevel}
-        totalLevels={challenges.length / 2}
+        currentLevel={currentLevel + 1}
+        totalLevels={totalLevels}
         isAdminMode={isAdminMode}
         onToggleAdminMode={() => setIsAdminMode(!isAdminMode)}
       />
       <AdminControls
         isAdminMode={isAdminMode}
         currentLevel={currentLevel}
-        totalLevels={challenges.length / 2}
+        totalLevels={totalLevels}
         onLevelChange={(newLevel) => {
           setCurrentLevel(newLevel);
-          setUserPrompts(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(c => c.initialPrompt));
-          setSystemPrompts(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(c => c.initialSystemPrompt || ""));
-          setApiResponses(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(() => ""));
-          setIsCorrect(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(() => false));
-          setShowHints(challenges.slice(newLevel * 2, (newLevel + 1) * 2).map(() => false));
+          console.log("Admin changed level to:", newLevel);
+          const newStartIndex = newLevel === 0 ? 0 : challengesPerLevel[0];
+          const newEndIndex = newStartIndex + challengesPerLevel[newLevel];
+          console.log("New user prompts:", challenges.slice(newStartIndex, newEndIndex).map(c => c.initialPrompt));
+          console.log("New system prompts:", challenges.slice(newStartIndex, newEndIndex).map(c => c.initialSystemPrompt || ""));
         }}
       />
       <div className="flex flex-col space-y-4">
-        {[0, 1].map((index) => {
-          const challengeIndex = currentLevel * 2 + index;
+        {currentChallenges.map((challenge, index) => {
+          const challengeIndex = startIndex + index;
           const isImmutableUserPrompt = (challengeIndex === 1 && currentLevel === 0) || (challengeIndex === 2 && currentLevel === 1);
           const hasSystemPrompt = challengeIndex === 1 || challengeIndex === 2;
           return (
             <Challenge
               key={index}
-              question={challenges[challengeIndex].question}
-              task={challenges[challengeIndex].task}
+              question={challenge.question}
+              task={challenge.task}
               systemPrompt={systemPrompts[challengeIndex]}
               userPrompt={userPrompts[challengeIndex]}
               apiResponse={apiResponses[challengeIndex]}
               isCorrect={isCorrect[challengeIndex]}
               isLoading={isLoading[challengeIndex]}
               showHint={showHints[challengeIndex]}
-              hint={challenges[challengeIndex].hint}
+              hint={challenge.hint}
               isImmutableUserPrompt={isImmutableUserPrompt}
               hasSystemPrompt={hasSystemPrompt}
               onSystemPromptChange={(value) => {
@@ -246,6 +282,7 @@ export function TextAdventureGameComponent() {
                 const newUserPrompts = [...userPrompts];
                 newUserPrompts[challengeIndex] = value;
                 setUserPrompts(newUserPrompts);
+                console.log("User prompt changed for challenge", challengeIndex, "to:", value);
               }}
               onSubmit={() => handleSubmit(challengeIndex)}
               onToggleHint={() => {
@@ -253,11 +290,12 @@ export function TextAdventureGameComponent() {
                 newShowHints[challengeIndex] = !newShowHints[challengeIndex];
                 setShowHints(newShowHints);
               }}
+              wordCount={apiResponses[challengeIndex] ? apiResponses[challengeIndex].trim().split(/\s+/).length : 0}
             />
           );
         })}
       </div>
-      {(isAdminMode || isCorrect.slice(currentLevel * 2, (currentLevel + 1) * 2).every(Boolean)) && (
+      {(isAdminMode || isCorrect.slice(startIndex, endIndex).every(Boolean)) && (
         <div className="mt-4 text-center">
           <Button onClick={advanceToNextLevel} className="w-full max-w-md">
             Next Level

@@ -19,6 +19,7 @@ interface ChallengeProps {
   onUserPromptChange: (value: string) => void;
   onSubmit: () => void;
   onToggleHint: () => void;
+  wordCount: number;
 }
 
 export function Challenge({
@@ -36,7 +37,8 @@ export function Challenge({
   onSystemPromptChange,
   onUserPromptChange,
   onSubmit,
-  onToggleHint
+  onToggleHint,
+  wordCount
 }: ChallengeProps) {
   return (
     <Card className={`w-full ${isCorrect ? 'bg-green-100' : ''}`}>
@@ -69,6 +71,7 @@ export function Challenge({
           <div className="mt-4">
             <h4 className="font-semibold">API Response:</h4>
             <p className="text-sm">{apiResponse}</p>
+            {wordCount > 0 && <p className="text-sm mt-2">Word count: {wordCount}</p>}
           </div>
         )}
         {showHint && (
