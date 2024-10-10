@@ -81,8 +81,8 @@ export function TextAdventureGameComponent() {
   const [isStreamComplete, setIsStreamComplete] = useState<boolean[]>([]);
   const [isAdminMode, setIsAdminMode] = useState(false);
 
-  const totalLevels = 2;
   const challengesPerLevel = [2, 3]; // 2 challenges in level 1, 3 challenges in level 2
+  const totalLevels = challengesPerLevel.length; // 2 challenges in level 1, 3 challenges in level 2
 
   useEffect(() => {
     console.log("Game initialized");
@@ -90,7 +90,7 @@ export function TextAdventureGameComponent() {
   }, []);
 
   useEffect(() => {
-    const startIndex = currentLevel === 0 ? 0 : challengesPerLevel[0];
+    const startIndex = challengesPerLevel.slice(0, currentLevel).reduce((a, b) => a + b, 0);
     const endIndex = startIndex + challengesPerLevel[currentLevel];
     console.log("Current level:", currentLevel);
     console.log("Current challenges:", challenges.slice(startIndex, endIndex));
@@ -199,7 +199,7 @@ export function TextAdventureGameComponent() {
   };
 
   const advanceToNextLevel = () => {
-    const startIndex = currentLevel === 0 ? 0 : challengesPerLevel[0];
+    const startIndex = challengesPerLevel.slice(0, currentLevel).reduce((a, b) => a + b, 0);
     const endIndex = startIndex + challengesPerLevel[currentLevel];
     if (isAdminMode || isCorrect.slice(startIndex, endIndex).every(Boolean)) {
       if (currentLevel === totalLevels - 1) {
@@ -208,7 +208,7 @@ export function TextAdventureGameComponent() {
         const newLevel = currentLevel + 1;
         setCurrentLevel(newLevel);
         console.log("Advancing to level:", newLevel);
-        const newStartIndex = newLevel === 0 ? 0 : challengesPerLevel[0];
+        const newStartIndex = challengesPerLevel.slice(0, newLevel).reduce((a, b) => a + b, 0);
         const newEndIndex = newStartIndex + challengesPerLevel[newLevel];
         console.log("New user prompts:", challenges.slice(newStartIndex, newEndIndex).map(c => c.initialPrompt));
         console.log("New system prompts:", challenges.slice(newStartIndex, newEndIndex).map(c => c.initialSystemPrompt || ""));
@@ -228,7 +228,7 @@ export function TextAdventureGameComponent() {
     return <GameStatus status={gameStatus} onResetGame={resetGame} />;
   }
 
-  const startIndex = currentLevel === 0 ? 0 : challengesPerLevel[0];
+  const startIndex = challengesPerLevel.slice(0, currentLevel).reduce((a, b) => a + b, 0);
   const endIndex = startIndex + challengesPerLevel[currentLevel];
   const currentChallenges = challenges.slice(startIndex, endIndex);
 
@@ -236,7 +236,7 @@ export function TextAdventureGameComponent() {
     <div className="container mx-auto p-4">
       <GameHeader
         lives={lives}
-        currentLevel={currentLevel + 1}
+        currentLevel={currentLevel + 1} // This is correct, we want to display level 1 to the user when currentLevel is 0
         totalLevels={totalLevels}
         isAdminMode={isAdminMode}
         onToggleAdminMode={() => setIsAdminMode(!isAdminMode)}
@@ -248,7 +248,7 @@ export function TextAdventureGameComponent() {
         onLevelChange={(newLevel) => {
           setCurrentLevel(newLevel);
           console.log("Admin changed level to:", newLevel);
-          const newStartIndex = newLevel === 0 ? 0 : challengesPerLevel[0];
+          const newStartIndex = challengesPerLevel.slice(0, newLevel).reduce((a, b) => a + b, 0);
           const newEndIndex = newStartIndex + challengesPerLevel[newLevel];
           console.log("New user prompts:", challenges.slice(newStartIndex, newEndIndex).map(c => c.initialPrompt));
           console.log("New system prompts:", challenges.slice(newStartIndex, newEndIndex).map(c => c.initialSystemPrompt || ""));

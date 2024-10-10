@@ -19,7 +19,7 @@ export function GameHeader({ lives, currentLevel, totalLevels, isAdminMode, onTo
           <Heart key={i} className={`w-6 h-6 ${i < lives ? "text-red-500 fill-red-500" : "text-gray-300"}`} />
         ))}
       </div>
-      <p className="mt-2">Level: {currentLevel + 1} / {totalLevels}</p>
+      <p className="mt-2">Level: {currentLevel} / {totalLevels}</p>
       <Button
         variant="outline"
         size="sm"
