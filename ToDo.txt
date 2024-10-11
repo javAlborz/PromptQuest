@@ -2,8 +2,8 @@
 #features
 -autocomplete the rest bc of few shot prompting on the first challenges
 -Non clickable cursor on immutable fields
--Text on input field should dissapear once clicked
--card briefly flashes red on error
+-Remove "user promp" and "system prompt" text- Also move "API response" header in reponse text
+-Word count should only be in story challenge
 -Maybe convert notebooks to markdown first?
 
 
@@ -15,7 +15,6 @@ I have implemented a component in text-adventure-game.tsx based on the jupyter n
 
 
 
-write comments only on the things you add or remove
 
 #one-liner
 npx ai-digest -i . -o pe-game-summary-work.md --show-output-files && mv pe-game-summary-work.md /mnt/c/Users/W36059/Desktop/

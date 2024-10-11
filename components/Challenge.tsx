@@ -7,7 +7,9 @@ interface ChallengeProps {
   question: string;
   task: string;
   systemPrompt?: string;
+  systemPromptPlaceholder?: string;
   userPrompt: string;
+  userPromptPlaceholder?: string; 
   apiResponse: string;
   isCorrect: boolean;
   isLoading: boolean;
@@ -27,7 +29,9 @@ export function Challenge({
   question,
   task,
   systemPrompt,
+  systemPromptPlaceholder,
   userPrompt,
+  userPromptPlaceholder,
   apiResponse,
   isCorrect,
   isLoading,
@@ -62,7 +66,7 @@ export function Challenge({
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">User Prompt:</label>
           <Input
-            placeholder="Enter your user prompt here"
+            placeholder={userPromptPlaceholder} 
             value={userPrompt}
             onChange={(e) => onUserPromptChange(e.target.value)}
             readOnly={isImmutableUserPrompt}

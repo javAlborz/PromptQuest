@@ -21,6 +21,8 @@ interface ChallengeType {
   initialSystemPrompt?: string;
   evaluation: (response: string) => boolean;
   hint?: string;
+  systemPromptPlaceholder?: string;
+  userPromptPlaceholder?: string;
 }
 
 const challenges: ChallengeType[] = [
@@ -28,7 +30,8 @@ const challenges: ChallengeType[] = [
   {
     question: "Counting to Three",
     task: "Edit the prompt to get Claude to count to three.",
-    initialPrompt: "Please respond to this message.",
+    initialPrompt: "",
+    userPromptPlaceholder: "Please respond to this message.",
     evaluation: (response: string) => {
       return response.includes("1") && response.includes("2") && response.includes("3");
     },
@@ -38,7 +41,8 @@ const challenges: ChallengeType[] = [
     question: "System Prompt - 3-Year-Old Child",
     task: "Modify the system prompt to make Claude respond like a 3-year-old child.",
     initialPrompt: "How big is the sky?",
-    initialSystemPrompt: "You are a helpful AI assistant.",
+    initialSystemPrompt: "",
+    systemPromptPlaceholder: "You are a helpful AI assistant.",
     evaluation: (response: string) => {
       return response.toLowerCase().includes("giggles") || response.toLowerCase().includes("soo");
     },
@@ -49,7 +53,8 @@ const challenges: ChallengeType[] = [
     question: "Spanish Output",
     task: "Modify the system prompt to make Claude output its answer in Spanish.",
     initialPrompt: "Hello Claude, how are you?",
-    initialSystemPrompt: "You are a helpful AI assistant.",
+    initialSystemPrompt: "",
+    systemPromptPlaceholder: "You are a helpful AI assistant.",
     evaluation: (response: string) => {
       return response.toLowerCase().includes("hola");
     },
@@ -58,7 +63,8 @@ const challenges: ChallengeType[] = [
   {
     question: "One Player Only",
     task: "Modify the prompt so that Claude responds with ONLY the name of one specific basketball player, with no other words or punctuation.",
-    initialPrompt: "Who is the best basketball player of all time?",
+    initialPrompt: "",
+    userPromptPlaceholder: "Who is the best basketball player of all time?",
     evaluation: (response: string) => {
       return response.trim() === "Michael Jordan";
     },
@@ -67,7 +73,8 @@ const challenges: ChallengeType[] = [
   {
     question: "Write a Long Story",
     task: "Modify the prompt to make Claude generate a response of at least 800 words.",
-    initialPrompt: "Tell me a story.",
+    initialPrompt: "",
+    userPromptPlaceholder: "Tell me a story.",
     evaluation: (response: string) => {
       const words = response.trim().split(/\s+/).length;
       return words >= 800;
@@ -295,6 +302,7 @@ export function TextAdventureGameComponent() {
               task={challenge.task}
               systemPrompt={systemPrompts[challengeIndex]}
               userPrompt={userPrompts[challengeIndex]}
+              userPromptPlaceholder={challenge.userPromptPlaceholder} 
               apiResponse={apiResponses[challengeIndex]}
               isCorrect={isCorrect[challengeIndex]}
               isLoading={isLoading[challengeIndex]}
