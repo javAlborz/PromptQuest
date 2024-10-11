@@ -6,6 +6,13 @@ import { GameStatus } from './GameStatus';
 import { GameHeader } from './GameHeader';
 import { AdminControls } from './AdminControls';
 
+// Define the level names
+const levelNames = [
+  "Basic Prompt Structure",
+  "Being Clear and Direct",
+  // Add more level names as you implement them
+];
+
 interface ChallengeType {
   question: string;
   task: string;
@@ -83,6 +90,7 @@ export function TextAdventureGameComponent() {
 
   const challengesPerLevel = [2, 3]; // 2 challenges in level 1, 3 challenges in level 2
   const totalLevels = challengesPerLevel.length; // 2 challenges in level 1, 3 challenges in level 2
+  const currentLevelName = levelNames[currentLevel];
 
   useEffect(() => {
     console.log("Game initialized");
@@ -238,6 +246,7 @@ export function TextAdventureGameComponent() {
         lives={lives}
         currentLevel={currentLevel + 1} // This is correct, we want to display level 1 to the user when currentLevel is 0
         totalLevels={totalLevels}
+        levelName={levelNames[currentLevel]} // Add this line to pass the current level name
         isAdminMode={isAdminMode}
         onToggleAdminMode={() => setIsAdminMode(!isAdminMode)}
       />
