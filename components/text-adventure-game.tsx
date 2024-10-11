@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Challenge } from './Challenge';
@@ -87,9 +88,10 @@ export function TextAdventureGameComponent() {
   const [isCorrect, setIsCorrect] = useState<boolean[]>([]);
   const [isStreamComplete, setIsStreamComplete] = useState<boolean[]>([]);
   const [isAdminMode, setIsAdminMode] = useState(false);
+  const [isIncorrect, setIsIncorrect] = useState<boolean[]>([]); // New state for incorrect answers
 
   const challengesPerLevel = [2, 3]; // 2 challenges in level 1, 3 challenges in level 2
-  const totalLevels = challengesPerLevel.length; // 2 challenges in level 1, 3 challenges in level 2
+  const totalLevels = challengesPerLevel.length;
   const currentLevelName = levelNames[currentLevel];
 
   useEffect(() => {
@@ -114,6 +116,7 @@ export function TextAdventureGameComponent() {
     setShowHints(challenges.map(() => false));
     setIsCorrect(challenges.map(() => false));
     setIsStreamComplete(challenges.map(() => false));
+    setIsIncorrect(challenges.map(() => false)); // Initialize isIncorrect state
   };
 
   useEffect(() => {
@@ -123,21 +126,33 @@ export function TextAdventureGameComponent() {
       const newIsCorrect = [...isCorrect];
       newIsCorrect[index] = correct;
       setIsCorrect(newIsCorrect);
-
+  
       if (!correct && !isAdminMode) {
-        setLives(prevLives => {
-          const newLives = prevLives - 1;
-          if (newLives === 0) {
-            setGameStatus("lost");
-          }
-          return newLives;
-        });
+        // Set the incorrect state for this challenge
+        const newIsIncorrect = [...isIncorrect];
+        newIsIncorrect[index] = true;
+        setIsIncorrect(newIsIncorrect);
+  
+        // Move this outside of the setLives callback
+        const newLives = lives - 1;
+        setLives(newLives);
+        if (newLives === 0) {
+          setGameStatus("lost");
+        }
+  
+        // Reset the incorrect state after a brief delay
+        setTimeout(() => {
+          const resetIsIncorrect = [...isIncorrect];
+          resetIsIncorrect[index] = false;
+          setIsIncorrect(resetIsIncorrect);
+        }, 500);
       }
+  
       const newIsStreamComplete = [...isStreamComplete];
       newIsStreamComplete[index] = false;
       setIsStreamComplete(newIsStreamComplete);
     }
-  }, [isStreamComplete, apiResponses, isAdminMode]);
+  }, [isStreamComplete, apiResponses, isAdminMode, challenges, isCorrect, isIncorrect, lives]);
 
   const handleSubmit = async (index: number) => {
     const newIsLoading = [...isLoading];
@@ -155,6 +170,11 @@ export function TextAdventureGameComponent() {
     const newIsStreamComplete = [...isStreamComplete];
     newIsStreamComplete[index] = false;
     setIsStreamComplete(newIsStreamComplete);
+
+    // Reset the incorrect state for this challenge
+    const newIsIncorrect = [...isIncorrect];
+    newIsIncorrect[index] = false;
+    setIsIncorrect(newIsIncorrect);
 
     try {
       const response = await fetch('/api/chat', {
@@ -244,9 +264,9 @@ export function TextAdventureGameComponent() {
     <div className="container mx-auto p-4">
       <GameHeader
         lives={lives}
-        currentLevel={currentLevel + 1} // This is correct, we want to display level 1 to the user when currentLevel is 0
+        currentLevel={currentLevel + 1}
         totalLevels={totalLevels}
-        levelName={levelNames[currentLevel]} // Add this line to pass the current level name
+        levelName={levelNames[currentLevel]}
         isAdminMode={isAdminMode}
         onToggleAdminMode={() => setIsAdminMode(!isAdminMode)}
       />
@@ -300,6 +320,7 @@ export function TextAdventureGameComponent() {
                 setShowHints(newShowHints);
               }}
               wordCount={apiResponses[challengeIndex] ? apiResponses[challengeIndex].trim().split(/\s+/).length : 0}
+              isIncorrect={isIncorrect[challengeIndex]} // New prop for incorrect state
             />
           );
         })}

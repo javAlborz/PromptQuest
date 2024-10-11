@@ -20,6 +20,7 @@ interface ChallengeProps {
   onSubmit: () => void;
   onToggleHint: () => void;
   wordCount: number;
+  isIncorrect: boolean; // Add this new prop
 }
 
 export function Challenge({
@@ -38,10 +39,11 @@ export function Challenge({
   onUserPromptChange,
   onSubmit,
   onToggleHint,
-  wordCount
+  wordCount,
+  isIncorrect
 }: ChallengeProps) {
   return (
-    <Card className={`w-full ${isCorrect ? 'bg-green-100' : ''}`}>
+    <Card className={`w-full ${isCorrect ? 'bg-green-100' : ''} ${isIncorrect ? 'animate-wrong-answer' : ''}`}>
       <CardHeader>
         <CardTitle>{question}</CardTitle>
         <CardDescription>{task}</CardDescription>

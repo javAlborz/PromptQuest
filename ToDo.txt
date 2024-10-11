@@ -4,7 +4,6 @@
 -Non clickable cursor on immutable fields
 -Text on input field should dissapear once clicked
 -card briefly flashes red on error
--Name of level displayed as sub header
 -Maybe convert notebooks to markdown first?
 
 

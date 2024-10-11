@@ -80,3 +80,17 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes flash-red {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: #FFCCCB; }
+}
+
+.animate-wrong-answer {
+  animation: flash-red 0.5s;
+}
+
+.transition-colors {
+  transition-property: background-color;
+  transition-timing-function: ease-in-out;
+}
