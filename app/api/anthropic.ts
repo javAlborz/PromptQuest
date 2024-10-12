@@ -8,7 +8,7 @@ export async function getAnthropicStreamingCompletion(prompt: string, systemProm
 
   const requestBody: any = {
     model: "claude-3-haiku-20240307",
-    max_tokens: 300,
+    max_tokens: 3000,
     messages: [{ role: "user", content: prompt }],
     stream: true
   };

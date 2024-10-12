@@ -2,8 +2,6 @@
 #features
 -autocomplete the rest bc of few shot prompting on the first challenges
 -Non clickable cursor on immutable fields
--Word count should only be in story challenge
--Words cap in the word count level
 -Press enter to submit
 
 #prompt
@@ -12,6 +10,8 @@ I need some help with my next app. I am attempting to make an educational game f
 
 I have implemented a component in text-adventure-game.tsx based on the jupyter notebooks 00-02 in /game-notebooks/ so far. I am currently in the process of populating my game decks with the assignments tasked in these notebooks, in their respective "Exercises" sections. Start by looking through the notebook exercises and how the answers are evaluated, as I want my game to be evaluated as close as possible as how it it's counterpart is evaluated in the notebook. 
 
+
+Think step by step on how to implement this and suggest code edits with complete blocks so that the changes are easy to copy paste.
 
 
 

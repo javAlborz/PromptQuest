@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea";
 
 interface ChallengeProps {
   question: string;
@@ -12,6 +12,7 @@ interface ChallengeProps {
   userPromptPlaceholder?: string; 
   apiResponse: string;
   isCorrect: boolean;
+  isPending: boolean;
   isLoading: boolean;
   showHint: boolean;
   hint?: string;
@@ -21,9 +22,8 @@ interface ChallengeProps {
   onUserPromptChange: (value: string) => void;
   onSubmit: () => void;
   onToggleHint: () => void;
-  showWordCount: boolean; // New prop
-  wordCount: number; // New prop
-  isIncorrect: boolean; // Add this new prop
+  showWordCount: boolean;
+  wordCount: number;
 }
 
 export function Challenge({
@@ -33,8 +33,9 @@ export function Challenge({
   systemPromptPlaceholder,
   userPrompt,
   userPromptPlaceholder,
-  apiResponse,
   isCorrect,
+  apiResponse,
+  isPending,
   isLoading,
   showHint,
   hint,
@@ -46,33 +47,72 @@ export function Challenge({
   onToggleHint,
   showWordCount,
   wordCount,
-  isIncorrect
 }: ChallengeProps) {
+  const [userPromptHeight, setUserPromptHeight] = useState('auto');
+  const [systemPromptHeight, setSystemPromptHeight] = useState('auto');
+  const userPromptRef = useRef<HTMLTextAreaElement>(null);
+  const systemPromptRef = useRef<HTMLTextAreaElement>(null);
+
+  const adjustTextareaHeight = (textarea: HTMLTextAreaElement | null, setHeight: React.Dispatch<React.SetStateAction<string>>) => {
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+      setHeight(`${textarea.scrollHeight}px`);
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight(userPromptRef.current, setUserPromptHeight);
+    adjustTextareaHeight(systemPromptRef.current, setSystemPromptHeight);
+  }, [userPrompt, systemPrompt]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, isSystemPrompt: boolean) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (isSystemPrompt) {
+        onSystemPromptChange((e.target as HTMLTextAreaElement).value);
+      } else {
+        onUserPromptChange((e.target as HTMLTextAreaElement).value);
+      }
+      onSubmit();
+    }
+  };
+
   return (
-    <Card className={`w-full ${isCorrect ? 'bg-green-100' : ''} ${isIncorrect ? 'animate-wrong-answer' : ''}`}>
-      <CardHeader>
+    <Card className={`w-full transition-colors ${
+      isCorrect && apiResponse 
+        ? 'bg-green-100' 
+        : apiResponse && !isPending
+          ? 'animate-wrong-answer' 
+          : ''
+    }`}>     <CardHeader>
         <CardTitle>{question}</CardTitle>
         <CardDescription>{task}</CardDescription>
       </CardHeader>
       <CardContent>
         {hasSystemPrompt && (
           <div className="mb-2">
-            {/* <label className="block text-sm font-medium text-gray-700 mb-1">System Prompt:</label> */}
-            <Input
-              placeholder="Enter your system prompt here"
+            <Textarea
+              ref={systemPromptRef}
+              placeholder={systemPromptPlaceholder || "Enter your system prompt here"}
               value={systemPrompt ?? ''}
               onChange={(e) => onSystemPromptChange(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, true)}
+              style={{ height: systemPromptHeight }}
+              className="resize-none"
             />
           </div>
         )}
         <div>
-          {/* <label className="block text-sm font-medium text-gray-700 mb-1">User Prompt:</label> */}
-          <Input
-            placeholder={userPromptPlaceholder} 
+          <Textarea
+            ref={userPromptRef}
+            placeholder={userPromptPlaceholder || "Enter your user prompt here"}
             value={userPrompt}
             onChange={(e) => onUserPromptChange(e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, false)}
             readOnly={isImmutableUserPrompt}
-            className={isImmutableUserPrompt ? "bg-gray-100" : ""}
+            style={{ height: userPromptHeight }}
+            className={`resize-none ${isImmutableUserPrompt ? "bg-gray-100" : ""}`}
           />
         </div>
         {apiResponse && (
