@@ -11,6 +11,7 @@ import { AdminControls } from './AdminControls';
 const levelNames = [
   "Basic Prompt Structure",
   "Being Clear and Direct",
+  "Assigning Roles (Role Prompting)"
   // Add more level names as you implement them
 ];
 
@@ -23,6 +24,7 @@ interface ChallengeType {
   hint?: string;
   systemPromptPlaceholder?: string;
   userPromptPlaceholder?: string;
+  isImmutableUserPrompt?: boolean;  
 }
 
 const challenges: ChallengeType[] = [
@@ -80,6 +82,19 @@ const challenges: ChallengeType[] = [
       return words >= 800;
     },
     hint: "Think about asking for a detailed story with multiple characters, plot twists, and vivid descriptions. You can also specify a minimum word count in your prompt."
+  },
+  // Level 3 (Notebook 3)
+  {
+    question: "Math Correction",
+    task: "Modify the system prompt to make Claude grade the math solution as incorrect.",
+    initialPrompt: "Is this equation solved correctly below?\n\n2x - 3 = 9\n2x = 6\nx = 3",
+    initialSystemPrompt: "",
+    evaluation: (response: string) => {
+      return response.toLowerCase().includes("incorrect") || response.toLowerCase().includes("not correct");
+    },
+    hint: "Consider assigning Claude a role in the system prompt that might make it better at solving math problems.",
+    systemPromptPlaceholder: "You are a...",
+    userPromptPlaceholder: "The user prompt is not editable for this challenge."
   }
 ];
 
@@ -97,7 +112,7 @@ export function TextAdventureGameComponent() {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [wordCounts, setWordCounts] = useState<number[]>([]);
 
-  const challengesPerLevel = [2, 3]; // 2 challenges in level 1, 3 challenges in level 2
+  const challengesPerLevel = [2, 3, 1]; // 2 challenges in level 1, 3 challenges in level 2, 1 challenge in level 3
   const totalLevels = challengesPerLevel.length;
   const currentLevelName = levelNames[currentLevel];
 
@@ -274,48 +289,54 @@ export function TextAdventureGameComponent() {
       />
       <div className="flex flex-col space-y-4">
         {currentChallenges.map((challenge, index) => {
-          const challengeIndex = startIndex + index;
-          const isImmutableUserPrompt = (challengeIndex === 1 && currentLevel === 0) || (challengeIndex === 2 && currentLevel === 1);
-          const hasSystemPrompt = challengeIndex === 1 || challengeIndex === 2;
-          const showWordCount = currentLevel === 1 && challengeIndex === 4;
-          return (
-            <Challenge
-              key={index}
-              question={challenge.question}
-              task={challenge.task}
-              systemPrompt={systemPrompts[challengeIndex]}
-              userPrompt={userPrompts[challengeIndex]}
-              userPromptPlaceholder={challenge.userPromptPlaceholder} 
-              apiResponse={apiResponses[challengeIndex]}
-              isCorrect={isCorrect[challengeIndex]}
-              isLoading={isLoading[challengeIndex]}
-              showHint={showHints[challengeIndex]}
-              hint={challenge.hint}
-              isImmutableUserPrompt={isImmutableUserPrompt}
-              hasSystemPrompt={hasSystemPrompt}
-              isPending={isPending[challengeIndex]}
-              onSystemPromptChange={(value) => {
-                const newSystemPrompts = [...systemPrompts];
-                newSystemPrompts[challengeIndex] = value;
-                setSystemPrompts(newSystemPrompts);
-              }}
-              onUserPromptChange={(value) => {
+        const challengeIndex = startIndex + index;
+        const isImmutableUserPrompt = (challengeIndex === 1 && currentLevel === 0) || 
+                                      (challengeIndex === 2 && currentLevel === 1) ||
+                                      (challengeIndex === 5); // Math Correction challenge
+        const hasSystemPrompt = challengeIndex === 1 || 
+                                challengeIndex === 2 || 
+                                challengeIndex === 5; // Math Correction challenge
+        const showWordCount = currentLevel === 1 && challengeIndex === 4;
+        return (
+          <Challenge
+            key={index}
+            question={challenge.question}
+            task={challenge.task}
+            systemPrompt={systemPrompts[challengeIndex]}
+            userPrompt={userPrompts[challengeIndex]}
+            userPromptPlaceholder={challenge.userPromptPlaceholder} 
+            apiResponse={apiResponses[challengeIndex]}
+            isCorrect={isCorrect[challengeIndex]}
+            isLoading={isLoading[challengeIndex]}
+            showHint={showHints[challengeIndex]}
+            hint={challenge.hint}
+            isImmutableUserPrompt={isImmutableUserPrompt}
+            hasSystemPrompt={hasSystemPrompt}
+            isPending={isPending[challengeIndex]}
+            onSystemPromptChange={(value) => {
+              const newSystemPrompts = [...systemPrompts];
+              newSystemPrompts[challengeIndex] = value;
+              setSystemPrompts(newSystemPrompts);
+            }}
+            onUserPromptChange={(value) => {
+              if (!isImmutableUserPrompt) {
                 const newUserPrompts = [...userPrompts];
                 newUserPrompts[challengeIndex] = value;
                 setUserPrompts(newUserPrompts);
                 console.log("User prompt changed for challenge", challengeIndex, "to:", value);
-              }}
-              onSubmit={() => handleSubmit(challengeIndex)}
-              onToggleHint={() => {
-                const newShowHints = [...showHints];
-                newShowHints[challengeIndex] = !newShowHints[challengeIndex];
-                setShowHints(newShowHints);
-              }}
-              showWordCount={showWordCount}
-              wordCount={wordCounts[challengeIndex] || 0}
-            />
-          );
-        })}
+              }
+            }}
+            onSubmit={() => handleSubmit(challengeIndex)}
+            onToggleHint={() => {
+              const newShowHints = [...showHints];
+              newShowHints[challengeIndex] = !newShowHints[challengeIndex];
+              setShowHints(newShowHints);
+            }}
+            showWordCount={showWordCount}
+            wordCount={wordCounts[challengeIndex] || 0}
+          />
+        );
+      })}
       </div>
       {(isAdminMode || isCorrect.slice(startIndex, endIndex).every(Boolean)) && (
         <div className="mt-4 text-center">
