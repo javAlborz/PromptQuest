@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Lock } from 'lucide-react';
 
 interface ChallengeProps {
   question: string;
@@ -103,7 +105,7 @@ export function Challenge({
             />
           </div>
         )}
-        <div>
+        <div className="relative">
           <Textarea
             ref={userPromptRef}
             placeholder={userPromptPlaceholder || "Enter your user prompt here"}
@@ -112,8 +114,22 @@ export function Challenge({
             onKeyDown={(e) => handleKeyDown(e, false)}
             readOnly={isImmutableUserPrompt}
             style={{ height: userPromptHeight }}
-            className={`resize-none ${isImmutableUserPrompt ? "bg-gray-100" : ""}`}
+            className={`resize-none ${isImmutableUserPrompt ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""}`}
           />
+          {isImmutableUserPrompt && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="absolute top-2 right-2 text-gray-500">
+                    <Lock size={16} />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>This field is not editable for this challenge.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
         {apiResponse && (
           <div className="mt-4">

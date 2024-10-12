@@ -38,7 +38,7 @@ const challenges: ChallengeType[] = [
     hint: "Be direct and specific in your instruction."
   },
   {
-    question: "System Prompt - 3-Year-Old Child",
+    question: "3-Year-Old Child",
     task: "Modify the system prompt to make Claude respond like a 3-year-old child.",
     initialPrompt: "How big is the sky?",
     initialSystemPrompt: "",

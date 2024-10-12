@@ -1,8 +1,6 @@
 
 #features
 -autocomplete the rest bc of few shot prompting on the first challenges
--Non clickable cursor on immutable fields
--Press enter to submit
 
 #prompt
 
