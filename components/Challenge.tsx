@@ -21,7 +21,8 @@ interface ChallengeProps {
   onUserPromptChange: (value: string) => void;
   onSubmit: () => void;
   onToggleHint: () => void;
-  wordCount: number;
+  showWordCount: boolean; // New prop
+  wordCount: number; // New prop
   isIncorrect: boolean; // Add this new prop
 }
 
@@ -43,6 +44,7 @@ export function Challenge({
   onUserPromptChange,
   onSubmit,
   onToggleHint,
+  showWordCount,
   wordCount,
   isIncorrect
 }: ChallengeProps) {
@@ -55,7 +57,7 @@ export function Challenge({
       <CardContent>
         {hasSystemPrompt && (
           <div className="mb-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">System Prompt:</label>
+            {/* <label className="block text-sm font-medium text-gray-700 mb-1">System Prompt:</label> */}
             <Input
               placeholder="Enter your system prompt here"
               value={systemPrompt ?? ''}
@@ -64,7 +66,7 @@ export function Challenge({
           </div>
         )}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">User Prompt:</label>
+          {/* <label className="block text-sm font-medium text-gray-700 mb-1">User Prompt:</label> */}
           <Input
             placeholder={userPromptPlaceholder} 
             value={userPrompt}
@@ -75,9 +77,8 @@ export function Challenge({
         </div>
         {apiResponse && (
           <div className="mt-4">
-            <h4 className="font-semibold">API Response:</h4>
             <p className="text-sm">{apiResponse}</p>
-            {wordCount > 0 && <p className="text-sm mt-2">Word count: {wordCount}</p>}
+            {showWordCount && wordCount > 0 && <p className="text-sm mt-2">Word count: {wordCount}</p>}
           </div>
         )}
         {showHint && (

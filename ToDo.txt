@@ -2,10 +2,9 @@
 #features
 -autocomplete the rest bc of few shot prompting on the first challenges
 -Non clickable cursor on immutable fields
--Remove "user promp" and "system prompt" text- Also move "API response" header in reponse text
 -Word count should only be in story challenge
--Maybe convert notebooks to markdown first?
-
+-Words cap in the word count level
+-Press enter to submit
 
 #prompt
 

@@ -95,7 +95,7 @@ export function TextAdventureGameComponent() {
   const [isCorrect, setIsCorrect] = useState<boolean[]>([]);
   const [isStreamComplete, setIsStreamComplete] = useState<boolean[]>([]);
   const [isAdminMode, setIsAdminMode] = useState(false);
-  const [isIncorrect, setIsIncorrect] = useState<boolean[]>([]); // New state for incorrect answers
+  const [wordCounts, setWordCounts] = useState<number[]>([]);
 
   const challengesPerLevel = [2, 3]; // 2 challenges in level 1, 3 challenges in level 2
   const totalLevels = challengesPerLevel.length;
@@ -123,7 +123,7 @@ export function TextAdventureGameComponent() {
     setShowHints(challenges.map(() => false));
     setIsCorrect(challenges.map(() => false));
     setIsStreamComplete(challenges.map(() => false));
-    setIsIncorrect(challenges.map(() => false)); // Initialize isIncorrect state
+    setWordCounts(challenges.map(() => 0));
   };
 
   useEffect(() => {
@@ -133,33 +133,26 @@ export function TextAdventureGameComponent() {
       const newIsCorrect = [...isCorrect];
       newIsCorrect[index] = correct;
       setIsCorrect(newIsCorrect);
-  
+
       if (!correct && !isAdminMode) {
-        // Set the incorrect state for this challenge
-        const newIsIncorrect = [...isIncorrect];
-        newIsIncorrect[index] = true;
-        setIsIncorrect(newIsIncorrect);
-  
-        // Move this outside of the setLives callback
-        const newLives = lives - 1;
-        setLives(newLives);
-        if (newLives === 0) {
-          setGameStatus("lost");
-        }
-  
-        // Reset the incorrect state after a brief delay
-        setTimeout(() => {
-          const resetIsIncorrect = [...isIncorrect];
-          resetIsIncorrect[index] = false;
-          setIsIncorrect(resetIsIncorrect);
-        }, 500);
+        setLives(prevLives => {
+          const newLives = prevLives - 1;
+          if (newLives === 0) {
+            setGameStatus("lost");
+          }
+          return newLives;
+        });
       }
-  
+
       const newIsStreamComplete = [...isStreamComplete];
       newIsStreamComplete[index] = false;
       setIsStreamComplete(newIsStreamComplete);
     }
-  }, [isStreamComplete, apiResponses, isAdminMode, challenges, isCorrect, isIncorrect, lives]);
+  }, [isStreamComplete, apiResponses, isAdminMode, challenges, isCorrect]);
+
+  const countWords = (text: string): number => {
+    return text.trim().split(/\s+/).length;
+  };
 
   const handleSubmit = async (index: number) => {
     const newIsLoading = [...isLoading];
@@ -177,11 +170,6 @@ export function TextAdventureGameComponent() {
     const newIsStreamComplete = [...isStreamComplete];
     newIsStreamComplete[index] = false;
     setIsStreamComplete(newIsStreamComplete);
-
-    // Reset the incorrect state for this challenge
-    const newIsIncorrect = [...isIncorrect];
-    newIsIncorrect[index] = false;
-    setIsIncorrect(newIsIncorrect);
 
     try {
       const response = await fetch('/api/chat', {
@@ -216,6 +204,11 @@ export function TextAdventureGameComponent() {
                 if (jsonData.type === 'content_block_delta' && jsonData.delta?.text) {
                   newApiResponses[index] += jsonData.delta.text;
                   setApiResponses([...newApiResponses]);
+                  
+                  // Update word count
+                  const newWordCounts = [...wordCounts];
+                  newWordCounts[index] = countWords(newApiResponses[index]);
+                  setWordCounts(newWordCounts);
                 }
               } catch (e) {
                 console.error('Error parsing JSON:', e);
@@ -295,6 +288,7 @@ export function TextAdventureGameComponent() {
           const challengeIndex = startIndex + index;
           const isImmutableUserPrompt = (challengeIndex === 1 && currentLevel === 0) || (challengeIndex === 2 && currentLevel === 1);
           const hasSystemPrompt = challengeIndex === 1 || challengeIndex === 2;
+          const showWordCount = currentLevel === 1 && challengeIndex === 4; // Show word count only for level 2, challenge 3
           return (
             <Challenge
               key={index}
@@ -327,8 +321,8 @@ export function TextAdventureGameComponent() {
                 newShowHints[challengeIndex] = !newShowHints[challengeIndex];
                 setShowHints(newShowHints);
               }}
-              wordCount={apiResponses[challengeIndex] ? apiResponses[challengeIndex].trim().split(/\s+/).length : 0}
-              isIncorrect={isIncorrect[challengeIndex]} // New prop for incorrect state
+              showWordCount={showWordCount}
+              wordCount={wordCounts[challengeIndex] || 0}
             />
           );
         })}
