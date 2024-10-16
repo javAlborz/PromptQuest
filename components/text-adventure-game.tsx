@@ -11,7 +11,8 @@ import { AdminControls } from './AdminControls';
 const levelNames = [
   "Basic Prompt Structure",
   "Being Clear and Direct",
-  "Assigning Roles (Role Prompting)"
+  "Assigning Roles (Role Prompting)",
+  "Separating Data and Instructions"
   // Add more level names as you implement them
 ];
 
@@ -95,7 +96,38 @@ const challenges: ChallengeType[] = [
     hint: "Consider assigning Claude a role in the system prompt that might make it better at solving math problems.",
     systemPromptPlaceholder: "You are a...",
     userPromptPlaceholder: "The user prompt is not editable for this challenge."
-  }
+  },
+  // Level 4 (Notebook 4)
+  {
+    question: "Haiku Topic",
+    task: "Modify the `PROMPT` so that it's a template that will take in a variable called `TOPIC` and output a haiku about the topic.",
+    initialPrompt: "",
+    userPromptPlaceholder: "Write a prompt template that generates a haiku about {TOPIC}",
+    evaluation: (response: string) => {
+      return /pigs/i.test(response) && /haiku/i.test(response);
+    },
+    hint: "Use f-string syntax to include the {TOPIC} variable in your prompt template."
+  },
+  {
+    question: "Dog Question with Typos",
+    task: "Fix the `PROMPT` by adding XML tags so that Claude produces the right answer.",
+    initialPrompt: "Hia its me i have a q about dogs jkaerjv {QUESTION} jklmvca tx it help me muhch much atx fst fst answer short short tx",
+    userPromptPlaceholder: "Edit the prompt to use XML tags",
+    evaluation: (response: string) => {
+      return /brown/i.test(response);
+    },
+    hint: "Use XML tags to separate the actual question from the surrounding text."
+  },
+  {
+    question: "Dog Question Part 2",
+    task: "Fix the `PROMPT` WITHOUT adding XML tags. Instead, remove only one or two words from the prompt.",
+    initialPrompt: "Hia its me i have a q about dogs jkaerjv {QUESTION} jklmvca tx it help me muhch much atx fst fst answer short short tx",
+    userPromptPlaceholder: "Edit the prompt by removing words",
+    evaluation: (response: string) => {
+      return /brown/i.test(response);
+    },
+    hint: "Remove words that might confuse Claude or make the question unclear."
+  },
 ];
 
 export function TextAdventureGameComponent() {
@@ -112,7 +144,7 @@ export function TextAdventureGameComponent() {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [wordCounts, setWordCounts] = useState<number[]>([]);
 
-  const challengesPerLevel = [2, 3, 1]; // 2 challenges in level 1, 3 challenges in level 2, 1 challenge in level 3
+  const challengesPerLevel = [2, 3, 1, 3]; // 2 challenges in level 1, 3 challenges in level 2, 1 challenge in level 3
   const totalLevels = challengesPerLevel.length;
   const currentLevelName = levelNames[currentLevel];
 
@@ -289,54 +321,61 @@ export function TextAdventureGameComponent() {
       />
       <div className="flex flex-col space-y-4">
         {currentChallenges.map((challenge, index) => {
-        const challengeIndex = startIndex + index;
-        const isImmutableUserPrompt = (challengeIndex === 1 && currentLevel === 0) || 
-                                      (challengeIndex === 2 && currentLevel === 1) ||
-                                      (challengeIndex === 5); // Math Correction challenge
-        const hasSystemPrompt = challengeIndex === 1 || 
-                                challengeIndex === 2 || 
-                                challengeIndex === 5; // Math Correction challenge
-        const showWordCount = currentLevel === 1 && challengeIndex === 4;
-        return (
-          <Challenge
-            key={index}
-            question={challenge.question}
-            task={challenge.task}
-            systemPrompt={systemPrompts[challengeIndex]}
-            userPrompt={userPrompts[challengeIndex]}
-            userPromptPlaceholder={challenge.userPromptPlaceholder} 
-            apiResponse={apiResponses[challengeIndex]}
-            isCorrect={isCorrect[challengeIndex]}
-            isLoading={isLoading[challengeIndex]}
-            showHint={showHints[challengeIndex]}
-            hint={challenge.hint}
-            isImmutableUserPrompt={isImmutableUserPrompt}
-            hasSystemPrompt={hasSystemPrompt}
-            isPending={isPending[challengeIndex]}
-            onSystemPromptChange={(value) => {
-              const newSystemPrompts = [...systemPrompts];
-              newSystemPrompts[challengeIndex] = value;
-              setSystemPrompts(newSystemPrompts);
-            }}
-            onUserPromptChange={(value) => {
-              if (!isImmutableUserPrompt) {
-                const newUserPrompts = [...userPrompts];
-                newUserPrompts[challengeIndex] = value;
-                setUserPrompts(newUserPrompts);
-                console.log("User prompt changed for challenge", challengeIndex, "to:", value);
-              }
-            }}
-            onSubmit={() => handleSubmit(challengeIndex)}
-            onToggleHint={() => {
-              const newShowHints = [...showHints];
-              newShowHints[challengeIndex] = !newShowHints[challengeIndex];
-              setShowHints(newShowHints);
-            }}
-            showWordCount={showWordCount}
-            wordCount={wordCounts[challengeIndex] || 0}
-          />
-        );
-      })}
+          const challengeIndex = startIndex + index;
+          const isImmutableUserPrompt = (challengeIndex === 1 && currentLevel === 0) || 
+                                        (challengeIndex === 2 && currentLevel === 1) ||
+                                        (challengeIndex === 5); // Math Correction challenge
+          const hasSystemPrompt = challengeIndex === 1 || 
+                                  challengeIndex === 2 || 
+                                  challengeIndex === 5; // Math Correction challenge
+          const showWordCount = currentLevel === 1 && challengeIndex === 4;
+          
+          // Modify userPrompt for exercises 4.2 and 4.3
+          let userPrompt = userPrompts[challengeIndex];
+          if (currentLevel === 3 && (index === 1 || index === 2)) {
+            userPrompt = userPrompt.replace("{QUESTION}", "ar cn brown?");
+          }
+          
+          return (
+            <Challenge
+              key={index}
+              question={challenge.question}
+              task={challenge.task}
+              systemPrompt={systemPrompts[challengeIndex]}
+              userPrompt={userPrompt}
+              userPromptPlaceholder={challenge.userPromptPlaceholder} 
+              apiResponse={apiResponses[challengeIndex]}
+              isCorrect={isCorrect[challengeIndex]}
+              isLoading={isLoading[challengeIndex]}
+              showHint={showHints[challengeIndex]}
+              hint={challenge.hint}
+              isImmutableUserPrompt={isImmutableUserPrompt}
+              hasSystemPrompt={hasSystemPrompt}
+              isPending={isPending[challengeIndex]}
+              onSystemPromptChange={(value) => {
+                const newSystemPrompts = [...systemPrompts];
+                newSystemPrompts[challengeIndex] = value;
+                setSystemPrompts(newSystemPrompts);
+              }}
+              onUserPromptChange={(value) => {
+                if (!isImmutableUserPrompt) {
+                  const newUserPrompts = [...userPrompts];
+                  newUserPrompts[challengeIndex] = value;
+                  setUserPrompts(newUserPrompts);
+                  console.log("User prompt changed for challenge", challengeIndex, "to:", value);
+                }
+              }}
+              onSubmit={() => handleSubmit(challengeIndex)}
+              onToggleHint={() => {
+                const newShowHints = [...showHints];
+                newShowHints[challengeIndex] = !newShowHints[challengeIndex];
+                setShowHints(newShowHints);
+              }}
+              showWordCount={showWordCount}
+              wordCount={wordCounts[challengeIndex] || 0}
+            />
+          );
+        })}
       </div>
       {(isAdminMode || isCorrect.slice(startIndex, endIndex).every(Boolean)) && (
         <div className="mt-4 text-center">
