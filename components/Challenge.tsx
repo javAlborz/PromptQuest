@@ -19,6 +19,7 @@ interface ChallengeProps {
   showHint: boolean;
   hint?: string;
   isImmutableUserPrompt: boolean;
+  isImmutableSystemPrompt: boolean;
   hasSystemPrompt: boolean;
   onSystemPromptChange: (value: string) => void;
   onUserPromptChange: (value: string) => void;
@@ -42,6 +43,7 @@ export function Challenge({
   showHint,
   hint,
   isImmutableUserPrompt,
+  isImmutableSystemPrompt,
   hasSystemPrompt,
   onSystemPromptChange,
   onUserPromptChange,
@@ -87,13 +89,14 @@ export function Challenge({
         : apiResponse && !isPending
           ? 'animate-wrong-answer' 
           : ''
-    }`}>     <CardHeader>
+    }`}>
+      <CardHeader>
         <CardTitle>{question}</CardTitle>
         <CardDescription>{task}</CardDescription>
       </CardHeader>
       <CardContent>
         {hasSystemPrompt && (
-          <div className="mb-2">
+          <div className="mb-2 relative">
             <Textarea
               ref={systemPromptRef}
               placeholder={systemPromptPlaceholder || "Enter your system prompt here"}
@@ -101,8 +104,23 @@ export function Challenge({
               onChange={(e) => onSystemPromptChange(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, true)}
               style={{ height: systemPromptHeight }}
-              className="resize-none"
+              className={`resize-none ${isImmutableSystemPrompt ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""}`}
+              readOnly={isImmutableSystemPrompt}
             />
+            {isImmutableSystemPrompt && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="absolute top-2 right-2 text-gray-500">
+                      <Lock size={16} />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>This field is not editable for this challenge.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         )}
         <div className="relative">

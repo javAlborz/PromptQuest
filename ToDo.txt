@@ -3,18 +3,70 @@
 <autocomplete the rest bc of few shot prompting on the first challenges>
     
 -Complete level 4. Start with researching the notebook
--Weapon/Inventory/character selection with different models as weapons. Claude 3.5 premium fee
+-Weapon/Inventory/character selection with different models as weapons. Claude 3.5 premium fee. Image of bot-character in chatresponses
+
+-Word removal game ina UI in 4-3? Pre-written starting text in 4-1
+
+-Remove bottom borders on challenges with system prompts so it seems like one field
+-Make text in immutable fields darker 
+
+-Some evaluations need llm-eval, Especially at 4.2
+
+-cards dynamically appearing after completing the previous card.
 
 #prompt
 
 I need some help with my next.js app. I am attempting to make an educational game for prompt-engineering best practices. The user will advance through decks of tasks by correctly solving prompt engineering challenges. If a user is answering wrong they will loose some of their health bar and revert back to the start of the game if they loose all health.
 
-I have implemented a component in text-adventure-game.tsx based on the jupyter notebooks 00-03 in /game-notebooks/ so far. I am currently in the process of populating my game levels with the assignments tasked in these notebooks, in their respective "Exercises" sections. As an example, level 1 of the game contains 2 challenges because notebook 1 has 2 exercises, while level 2 of the game contains 3 challenges because notebook 2 has 3 exercises.Start by looking through the notebook exercises and how the answers are evaluated, as I want my game to be evaluated as close as possible as how it it's counterpart is evaluated in the notebook.
-
-
+I have implemented a com    ponent in text-adventure-game.tsx based on the jupyter notebooks 00-03 in /game-notebooks/ so far. I am currently in the process of populating my game levels with the assignments tasked in these notebooks, in their respective "Exercises" sections. As an example, level 1 of the game contains 2 challenges because notebook 1 has 2 exercises, while level 2 of the game contains 3 challenges because notebook 2 has 3 exercises.Start by looking through the notebook exercises and how the answers are evaluated, as I want my game to be evaluated as close as possible as how it it's counterpart is evaluated in the notebook.
 
 
 Think step by step on how to implement this and suggest code edits with complete blocks so that the changes are easy to copy paste.
+
+
+
+
+
+
+
+
+---------------------------------------------------------------------------
+
+# System Prompt for LLM Agent
+
+You are an expert Next.js and React developer tasked with implementing changes to a prompt engineering educational game. You have been provided with specific instructions for updating Level 4.1 of the game, particularly focusing on improving the partially immutable prompt feature.
+
+Your role is to:
+
+1. Analyze the existing codebase, which you have access to.
+2. Implement the changes described in the following instructions. <instructions> </instructions>
+3. Ensure that your code suggestions are complete, correct, and follow best practices for Next.js and React development.
+4. Provide clear explanations for your changes and any decisions you make during the implementation.
+
+Key responsibilities:
+
+- Modify the `Challenge.tsx` component to implement the new `renderPartiallyImmutablePrompt` function.
+- Update the CSS to achieve the desired layout and styling for the partially immutable prompt.
+- Ensure that the immutable parts are aligned left, freely moveable, and visually distinct.
+- Make sure the editable areas have a white background and are easily identifiable.
+- Verify that your changes maintain the existing functionality of the game.
+
+Guidelines:
+
+- Use TypeScript for type safety.
+- Follow React best practices and hooks usage.
+- Ensure your code is accessible and responsive.
+- Provide comments in the code where necessary for clarity.
+- If you need any additional information or clarification about the existing codebase, ask for it.
+
+When providing code snippets or file changes:
+
+1. Clearly indicate the file you're modifying.
+2. Show the full context of the changes when possible.
+4. Explain your changes after each code block.
+
+
+-------------------------------------------------
 
 
 
