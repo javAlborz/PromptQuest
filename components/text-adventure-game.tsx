@@ -6,6 +6,7 @@ import { Challenge } from './Challenge';
 import { GameStatus } from './GameStatus';
 import { GameHeader } from './GameHeader';
 import { AdminControls } from './AdminControls';
+import ClientOnly from './ClientOnly';
 
 // Define the level names
 const levelNames = [
@@ -25,7 +26,8 @@ interface ChallengeType {
   hint?: string;
   systemPromptPlaceholder?: string;
   userPromptPlaceholder?: string;
-  isImmutableUserPrompt?: boolean;  
+  isImmutableUserPrompt?: boolean;
+  xmlTags?: string[];
 }
 
 const challenges: ChallengeType[] = [
@@ -97,48 +99,50 @@ const challenges: ChallengeType[] = [
     systemPromptPlaceholder: "You are a...",
     userPromptPlaceholder: "The user prompt is not editable for this challenge."
   },
-// Level 4 (Notebook 4)
-{
-  question: "Animal Sound Generator",
-  task: "Modify the `SYSTEM_PROMPT` to create a template that will take in a variable called `ANIMAL` and ask Claude to make the sound of that animal.",
-  initialPrompt: "Please respond with the noise that {ANIMAL} makes.",
-  initialSystemPrompt: "ANIMAL= ",
-  userPromptPlaceholder: "The user prompt is not editable for this challenge.",
-  systemPromptPlaceholder: "Edit the system prompt to use the {ANIMAL} variable",
-  evaluation: (response) => {
-    return /moo/i.test(response);
+  // Level 4 (Notebook 4)
+  {
+    question: "Animal Sound Generator",
+    task: "Modify the `SYSTEM_PROMPT` to create a template that will take in a variable called `ANIMAL` and ask Claude to make the sound of that animal.",
+    initialPrompt: "Please respond with the noise that {ANIMAL} makes.",
+    initialSystemPrompt: "ANIMAL= ",
+    userPromptPlaceholder: "The user prompt is not editable for this challenge.",
+    systemPromptPlaceholder: "Edit the system prompt to use the {ANIMAL} variable",
+    evaluation: (response) => {
+      return /moo/i.test(response);
+    },
+    hint: "Use an f-string to include the {ANIMAL} variable in your system prompt template."
   },
-  hint: "Use an f-string to include the {ANIMAL} variable in your system prompt template."
-},
-{
-  question: "Email Polishing with XML Tags",
-  task: "Modify the `PROMPT` by adding XML tags to separate the email content from the instructions.",
-  initialPrompt: "Yo Claude. Show up at 6am tomorrow because I'm the CEO and I say so. <----- Make this email more polite but don't change anything else about it.",
-  userPromptPlaceholder: "Edit the prompt to use XML tags",
-  initialSystemPrompt: "",
-  systemPromptPlaceholder: "No system prompt needed for this challenge.",
-  evaluation: (response) => {
-    return /polite/i.test(response) && /<email>/i.test(response) && /<\/email>/i.test(response);
+  {
+    question: "Email Polishing with XML Tags",
+    task: "Modify the `PROMPT` by adding XML tags to separate the email content from the instructions.",
+    initialPrompt: "Yo Claude. Show up at 6am tomorrow because I'm the CEO and I say so. <----- Make this email more polite but don't change anything else about it.",
+    userPromptPlaceholder: "Edit the prompt to use XML tags",
+    initialSystemPrompt: "",
+    systemPromptPlaceholder: "No system prompt needed for this challenge.",
+    evaluation: (response) => {
+      return /polite/i.test(response) && /<email>/i.test(response) && /<\/email>/i.test(response);
+    },
+    hint: "Wrap the email content in <email></email> tags to separate it from the instruction.",
+    xmlTags: ['<email>', '</email>']
   },
-  hint: "Wrap the email content in <email></email> tags to separate it from the instruction."
-},
-{
-  question: "Sentence List Analysis",
-  task: "Fix the `PROMPT` by adding XML tags so that Claude produces the right answer. DO NOT change any text, only add XML tags.",
-  initialPrompt: `- Each sentence is about an animal, like rabbits.
+  {
+    question: "Sentence List Analysis",
+    task: "Fix the `PROMPT` by adding XML tags so that Claude produces the right answer. DO NOT change any text, only add XML tags.",
+    initialPrompt: `- Each sentence is about an animal, like rabbits.
 - I like how cows sound
 - This sentence is about spiders
 - This sentence may appear to be about dogs but it's actually about pigs`,
-  userPromptPlaceholder: "Edit the prompt to use XML tags",
-  initialSystemPrompt: "Below is a list of sentences. Tell me the second item on the list.",
-  systemPromptPlaceholder: "The system prompt is not editable for this challenge.",
-  evaluation: (response) => {
-    return /spiders/i.test(response) ;
-  },
-  hint: "Use <sentences></sentences> tags to clearly separate the list from the instruction."
-}
+    userPromptPlaceholder: "Edit the prompt to use XML tags",
+    initialSystemPrompt: "Below is a list of sentences. Tell me the second item on the list.",
+    systemPromptPlaceholder: "The system prompt is not editable for this challenge.",
+    evaluation: (response) => {
+      return /spiders/i.test(response) ;
+    },
+    hint: "Use <sentences></sentences> tags to clearly separate the list from the instruction.",
+    isImmutableUserPrompt: true,
+    xmlTags: ['<sentences>', '</sentences>']
+  }
 ];
-
 
 export function TextAdventureGameComponent() {
   const [currentLevel, setCurrentLevel] = useState(0);
@@ -154,7 +158,7 @@ export function TextAdventureGameComponent() {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [wordCounts, setWordCounts] = useState<number[]>([]);
 
-  const challengesPerLevel = [2, 3, 1, 3]; // 2 challenges in level 1, 3 challenges in level 2, 1 challenge in level 3
+  const challengesPerLevel = [2, 3, 1, 3]; // 2 challenges in level 1, 3 challenges in level 2, 1 challenge in level 3, 3 challenges in level 4
   const totalLevels = challengesPerLevel.length;
   const currentLevelName = levelNames[currentLevel];
 
@@ -330,65 +334,69 @@ export function TextAdventureGameComponent() {
         }}
       />
     <div className="flex flex-col space-y-4">
-      {currentChallenges.map((challenge, index) => {
-        const challengeIndex = startIndex + index;
-        const isImmutableUserPrompt = (challengeIndex === 1 && currentLevel === 0) ||
-                                      (challengeIndex === 2 && currentLevel === 1) ||
-                                      (challengeIndex === 5) || // Math Correction challenge
-                                      (challengeIndex === 6);   // Animal Sound Generator challenge
-        const isImmutableSystemPrompt = challengeIndex === 8;   // Sentence List Analysis challenge
-        const hasSystemPrompt = challengeIndex === 1 ||
-                                challengeIndex === 2 ||
-                                challengeIndex === 5 || // Math Correction challenge
-                                challengeIndex === 6 || // Animal Sound Generator challenge
-                                challengeIndex === 8;   // Sentence List Analysis challenge
-        const showWordCount = currentLevel === 1 && challengeIndex === 4;
-        
-        return (
-          <Challenge
-            key={index}
-            question={challenge.question}
-            task={challenge.task}
-            systemPrompt={systemPrompts[challengeIndex]}
-            userPrompt={userPrompts[challengeIndex]}
-            userPromptPlaceholder={challenge.userPromptPlaceholder}
-            systemPromptPlaceholder={challenge.systemPromptPlaceholder}
-            apiResponse={apiResponses[challengeIndex]}
-            isCorrect={isCorrect[challengeIndex]}
-            isLoading={isLoading[challengeIndex]}
-            showHint={showHints[challengeIndex]}
-            hint={challenge.hint}
-            isImmutableUserPrompt={isImmutableUserPrompt}
-            isImmutableSystemPrompt={isImmutableSystemPrompt}
-            hasSystemPrompt={hasSystemPrompt}
-            isPending={isPending[challengeIndex]}
-            onSystemPromptChange={(value) => {
-              if (!isImmutableSystemPrompt) {
-                const newSystemPrompts = [...systemPrompts];
-                newSystemPrompts[challengeIndex] = value;
-                setSystemPrompts(newSystemPrompts);
-              }
-            }}
-            onUserPromptChange={(value) => {
-              if (!isImmutableUserPrompt) {
-                const newUserPrompts = [...userPrompts];
-                newUserPrompts[challengeIndex] = value;
-                setUserPrompts(newUserPrompts);
-                console.log("User prompt changed for challenge", challengeIndex, "to:", value);
-              }
-            }}
-            onSubmit={() => handleSubmit(challengeIndex)}
-            onToggleHint={() => {
-              const newShowHints = [...showHints];
-              newShowHints[challengeIndex] = !newShowHints[challengeIndex];
-              setShowHints(newShowHints);
-            }}
-            showWordCount={showWordCount}
-            wordCount={wordCounts[challengeIndex] || 0}
-          />
-        );
-      })}
-    </div>
+        {currentChallenges.map((challenge, index) => {
+          const challengeIndex = startIndex + index;
+          const isImmutableUserPrompt = (challengeIndex === 1 && currentLevel === 0) ||
+                                        (challengeIndex === 2 && currentLevel === 1) ||
+                                        (challengeIndex === 5) || // Math Correction challenge
+                                        (challengeIndex === 6) || // Animal Sound Generator challenge
+                                        (challengeIndex === 8);   // Sentence List Analysis challenge
+          const isImmutableSystemPrompt = challengeIndex === 8;   // Sentence List Analysis challenge
+          const hasSystemPrompt = challengeIndex === 1 ||
+                                  challengeIndex === 2 ||
+                                  challengeIndex === 5 || // Math Correction challenge
+                                  challengeIndex === 6 || // Animal Sound Generator challenge
+                                  challengeIndex === 8;   // Sentence List Analysis challenge
+          const showWordCount = currentLevel === 1 && challengeIndex === 4;
+          
+          return (
+            <ClientOnly key={challengeIndex}>
+              <Challenge
+                key={index}
+                question={challenge.question}
+                task={challenge.task}
+                systemPrompt={systemPrompts[challengeIndex]}
+                userPrompt={userPrompts[challengeIndex]}
+                userPromptPlaceholder={challenge.userPromptPlaceholder}
+                systemPromptPlaceholder={challenge.systemPromptPlaceholder}
+                apiResponse={apiResponses[challengeIndex]}
+                isCorrect={isCorrect[challengeIndex]}
+                isLoading={isLoading[challengeIndex]}
+                showHint={showHints[challengeIndex]}
+                hint={challenge.hint}
+                isImmutableUserPrompt={isImmutableUserPrompt}
+                isImmutableSystemPrompt={isImmutableSystemPrompt}
+                hasSystemPrompt={hasSystemPrompt}
+                isPending={isPending[challengeIndex]}
+                onSystemPromptChange={(value) => {
+                  if (!isImmutableSystemPrompt) {
+                    const newSystemPrompts = [...systemPrompts];
+                    newSystemPrompts[challengeIndex] = value;
+                    setSystemPrompts(newSystemPrompts);
+                  }
+                }}
+                onUserPromptChange={(value) => {
+                  if (!isImmutableUserPrompt) {
+                    const newUserPrompts = [...userPrompts];
+                    newUserPrompts[challengeIndex] = value;
+                    setUserPrompts(newUserPrompts);
+                    console.log("User prompt changed for challenge", challengeIndex, "to:", value);
+                  }
+                }}
+                onSubmit={() => handleSubmit(challengeIndex)}
+                onToggleHint={() => {
+                  const newShowHints = [...showHints];
+                  newShowHints[challengeIndex] = !newShowHints[challengeIndex];
+                  setShowHints(newShowHints);
+                }}
+                showWordCount={showWordCount}
+                wordCount={wordCounts[challengeIndex] || 0}
+                xmlTags={challenge.xmlTags || []}
+              />
+            </ClientOnly>
+          );
+        })}
+      </div>
       {(isAdminMode || isCorrect.slice(startIndex, endIndex).every(Boolean)) && (
         <div className="mt-4 text-center">
           <Button onClick={advanceToNextLevel} className="w-full max-w-md">
