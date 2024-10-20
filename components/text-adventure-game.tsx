@@ -333,7 +333,7 @@ export function TextAdventureGameComponent() {
           console.log("New system prompts:", challenges.slice(newStartIndex, newEndIndex).map(c => c.initialSystemPrompt || ""));
         }}
       />
-    <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-4">
         {currentChallenges.map((challenge, index) => {
           const challengeIndex = startIndex + index;
           const isImmutableUserPrompt = (challengeIndex === 1 && currentLevel === 0) ||
@@ -349,6 +349,12 @@ export function TextAdventureGameComponent() {
                                   challengeIndex === 8;   // Sentence List Analysis challenge
           const showWordCount = currentLevel === 1 && challengeIndex === 4;
           
+          console.log("Rendering challenge:", {
+            challengeIndex,
+            xmlTags: challenge.xmlTags,
+            isImmutableUserPrompt
+          });
+
           return (
             <ClientOnly key={challengeIndex}>
               <Challenge

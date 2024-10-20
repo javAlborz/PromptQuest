@@ -14,6 +14,8 @@
 
 -cards dynamically appearing after completing the previous card.
 
+-Should refactor to one file each level
+
 #prompt
 
 
@@ -69,7 +71,14 @@ When providing code snippets or file changes:
 
 -------------------------------------------------
 
+I want to edit  my component @/components/Challenge.tsx with the following instructions:
 
+<instructions>
+                        
+
+
+</instructions>
+-------------------------------------------------
 
 #one-liner
 npx ai-digest -i . -o pe-game-summary-work.md --show-output-files && mv pe-game-summary-work.md /mnt/c/Users/W36059/Desktop/

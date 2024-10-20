@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Lock } from 'lucide-react';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 interface ChallengeProps {
   question: string;
@@ -106,31 +105,26 @@ export function Challenge({
     }
   };
 
-  const handleDragEnd = (result: DropResult) => {
-    console.log("Drag ended:", result);
-    if (!result.destination) return;
-
-    const { source, destination } = result;
-    
-    if (source.droppableId === 'tags' && destination.droppableId === 'prompt') {
-      const draggedTag = availableTags[source.index].content;
-      const newPrompt = promptWithTags.slice(0, destination.index) + draggedTag + promptWithTags.slice(destination.index);
-      setPromptWithTags(newPrompt);
-      onUserPromptChange(newPrompt);
-
-      const newAvailableTags = [...availableTags];
-      newAvailableTags.splice(source.index, 1);
-      setAvailableTags(newAvailableTags);
-    }
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, tag: Tag) => {
+    e.dataTransfer.setData('text/plain', tag.content);
   };
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      console.log("DragDropContext:", DragDropContext);
-      console.log("Droppable:", Droppable);
-      console.log("Draggable:", Draggable);
-    }
-  }, []);
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const tagContent = e.dataTransfer.getData('text/plain');
+    const dropPosition = e.clientX - e.currentTarget.getBoundingClientRect().left;
+    const charPosition = Math.round(dropPosition / 8); // Assuming 8px per character
+
+    const newPrompt = promptWithTags.slice(0, charPosition) + tagContent + promptWithTags.slice(charPosition);
+    setPromptWithTags(newPrompt);
+    onUserPromptChange(newPrompt);
+
+    setAvailableTags(availableTags.filter(tag => tag.content !== tagContent));
+  };
 
   console.log("Challenge props:", {
     question,
@@ -183,77 +177,55 @@ export function Challenge({
             )}
           </div>
         )}
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="relative">
-            {xmlTags && xmlTags.length > 0 && (
-              <Droppable droppableId="tags" direction="horizontal">
-                {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="flex flex-wrap gap-2 mb-4"
-                  >
-                    {availableTags.map((tag, index) => (
-                      <Draggable key={tag.id} draggableId={tag.id} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={`bg-blue-500 text-white px-2 py-1 rounded cursor-move ${
-                              snapshot.isDragging ? 'opacity-50' : ''
-                            }`}
-                          >
-                            {tag.content}
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
+        <div className="relative">
+          {availableTags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {availableTags.map((tag) => (
+                <div
+                  key={tag.id}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, tag)}
+                  className="bg-blue-500 text-white px-2 py-1 rounded cursor-move"
+                >
+                  {tag.content}
+                </div>
+              ))}
+            </div>
+          )}
+          {isImmutableUserPrompt ? (
+            <div
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              className="bg-gray-100 p-2 rounded min-h-[100px] whitespace-pre-wrap"
+            >
+              {promptWithTags}
+            </div>
+          ) : (
+            <Textarea
+              ref={userPromptRef}
+              placeholder={userPromptPlaceholder || "Enter your user prompt here"}
+              value={userPrompt}
+              onChange={(e) => onUserPromptChange(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, false)}
+              style={{ height: userPromptHeight }}
+              className="resize-none"
+            />
+          )}
+          {isImmutableUserPrompt && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="absolute top-2 right-2 text-gray-500">
+                    <Lock size={16} />
                   </div>
-                )}
-              </Droppable>
-            )}
-            {isImmutableUserPrompt ? (
-              <Droppable droppableId="prompt" direction="horizontal">
-                {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="bg-gray-100 p-2 rounded min-h-[100px] whitespace-pre-wrap"
-                  >
-                    {promptWithTags}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            ) : (
-              <Textarea
-                ref={userPromptRef}
-                placeholder={userPromptPlaceholder || "Enter your user prompt here"}
-                value={userPrompt}
-                onChange={(e) => onUserPromptChange(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, false)}
-                style={{ height: userPromptHeight }}
-                className="resize-none"
-              />
-            )}
-            {isImmutableUserPrompt && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="absolute top-2 right-2 text-gray-500">
-                      <Lock size={16} />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>This field is not directly editable. Use the XML tags above to modify the content.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-          </div>
-        </DragDropContext>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>This field is not directly editable. Use the XML tags above to modify the content.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
         {apiResponse && (
           <div className="mt-4">
             <p className="text-sm">{apiResponse}</p>
