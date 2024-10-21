@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Challenge } from './Challenge';
 import { GameStatus } from './GameStatus';
@@ -158,7 +158,7 @@ export function TextAdventureGameComponent() {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [wordCounts, setWordCounts] = useState<number[]>([]);
 
-  const challengesPerLevel = [2, 3, 1, 3]; // 2 challenges in level 1, 3 challenges in level 2, 1 challenge in level 3, 3 challenges in level 4
+  const challengesPerLevel = useMemo(() => [2, 3, 1, 3], []);
   const totalLevels = challengesPerLevel.length;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const currentLevelName = levelNames[currentLevel];

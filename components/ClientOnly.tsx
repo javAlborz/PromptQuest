@@ -2,10 +2,10 @@ import React, { useEffect, useState, ReactNode } from 'react'
 
 interface ClientOnlyProps {
   children: ReactNode;
-  [key: string]: any;
+  className?: string;
 }
 
-export default function ClientOnly({ children, ...delegated }: ClientOnlyProps) {
+export default function ClientOnly({ children, className }: ClientOnlyProps) {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function ClientOnly({ children, ...delegated }: ClientOnlyProps) 
   }
 
   return (
-    <div {...delegated}>
+    <div className={className}>
       {children}
     </div>
   )
