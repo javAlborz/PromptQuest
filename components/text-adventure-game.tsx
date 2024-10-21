@@ -160,6 +160,7 @@ export function TextAdventureGameComponent() {
 
   const challengesPerLevel = [2, 3, 1, 3]; // 2 challenges in level 1, 3 challenges in level 2, 1 challenge in level 3, 3 challenges in level 4
   const totalLevels = challengesPerLevel.length;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const currentLevelName = levelNames[currentLevel];
 
   useEffect(() => {
@@ -174,7 +175,7 @@ export function TextAdventureGameComponent() {
     console.log("Current challenges:", challenges.slice(startIndex, endIndex));
     console.log("Current user prompts:", userPrompts.slice(startIndex, endIndex));
     console.log("Current system prompts:", systemPrompts.slice(startIndex, endIndex));
-  }, [currentLevel, userPrompts, systemPrompts]);
+  }, [currentLevel, userPrompts, systemPrompts, challengesPerLevel]);
 
   const initializeGameState = () => {
     setUserPrompts(challenges.map(c => c.initialPrompt));

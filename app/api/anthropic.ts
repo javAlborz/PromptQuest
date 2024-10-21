@@ -6,7 +6,13 @@ export async function getAnthropicStreamingCompletion(prompt: string, systemProm
     throw new Error('ANTHROPIC_API_KEY is not set');
   }
 
-  const requestBody: any = {
+  const requestBody: {
+    model: string;
+    max_tokens: number;
+    messages: { role: string; content: string }[];
+    stream: boolean;
+    system?: string;
+  } = {
     model: "claude-3-haiku-20240307",
     max_tokens: 3000,
     messages: [{ role: "user", content: prompt }],
