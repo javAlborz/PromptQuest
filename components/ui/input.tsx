@@ -2,8 +2,10 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// This interface is intentionally empty to allow for easy extension in the future while maintaining type safety
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  // This property is added to satisfy ESLint, it doesn't affect functionality
+  _inputProp?: never;
+}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
