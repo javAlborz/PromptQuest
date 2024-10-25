@@ -102,7 +102,7 @@ const challenges: ChallengeType[] = [
   // Level 4 (Notebook 4)
   {
     question: "Animal Sound Generator",
-    task: "Modify the `SYSTEM_PROMPT` to create a template that will take in a variable called `ANIMAL` and ask Claude to make the sound of that animal.",
+    task: "Modify the prompt to create a template that will take in a variable called `ANIMAL` and ask Claude to make the sound of a cow.",
     initialPrompt: "Please respond with the noise that {ANIMAL} makes.",
     initialSystemPrompt: "ANIMAL= ",
     userPromptPlaceholder: "The user prompt is not editable for this challenge.",
@@ -114,7 +114,7 @@ const challenges: ChallengeType[] = [
   },
   {
     question: "Email Polishing with XML Tags",
-    task: "Modify the `PROMPT` by adding XML tags to separate the email content from the instructions.",
+    task: "Modify the prompt by adding XML tags to separate the email content from the instructions.",
     initialPrompt: "Yo Claude. Show up at 6am tomorrow because I'm the CEO and I say so. <----- Make this email more polite but don't change anything else about it.",
     userPromptPlaceholder: "Edit the prompt to use XML tags",
     initialSystemPrompt: "",

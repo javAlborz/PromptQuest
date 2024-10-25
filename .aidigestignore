@@ -31,3 +31,8 @@ out/
 # OS files (commonly ignored)
 .DS_Store
 Thumbs.db
+
+
+venv/
+game-notebooks/
+game-notebooks-md/

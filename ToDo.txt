@@ -2,12 +2,12 @@
 #features
 <autocomplete the rest bc of few shot prompting on the first challenges>
     
--Complete level 4. Start with researching the notebook
 -Weapon/Inventory/character selection with different models as weapons. Claude 3.5 premium fee. Image of bot-character in chatresponses
 
--Word removal game ina UI in 4-3? Pre-written starting text in 4-1
+-Word removal game ina UI in 4-3? 
 
 -Remove bottom borders on challenges with system prompts so it seems like one field
+
 -Make text in immutable fields darker 
 
 -Some evaluations need llm-eval, Especially at 4.2
@@ -16,15 +16,19 @@
 
 -Should refactor to one file each level
 
--md notebooks on Desktop workspace
+
+
+#Backlog
+
+-Update hints 
+-Level4 polish
+
 
 #prompt
 
-
 I need some help with my next app. I am attempting to make an educational game for prompt-engineering best practices. The user will advance through decks of tasks by correctly solving prompt engineering challenges. If a user is answering wrong they will loose some of their health bar and revert back to the start of the game if they loose all health.
-I have implemented a component in text-adventure-game.tsx based on the jupyter notebooks 00-03 in /game-notebooks/ so far. I am currently in the process of populating my game levels with the assignments tasked in these notebooks, in their respective "Exercises" sections. As an example, level 1 of the game contains 2 challenges because notebook 1 has 2 exercises, while level 2 of the game contains 3 challenges because notebook 2 has 3 exercises. Start by looking through the notebook exercises and how the answers are evaluated, as I want my game to be evaluated as close as possible as how it it's counterpart is evaluated in the notebook.
 
-Our next step is to implement the 4th level of the game. Have a look at my starting implementation. I am not to happy with the questions here, so I would like to use examples from 04_Separating_Data_and_Instructions and not the exercises
+I have implemented a component in text-adventure-game.tsx based on the jupyter notebooks 00-03 in /game-notebooks/ so far. I am currently in the process of populating my game levels with the assignments tasked in these notebooks, in their respective "Exercises" sections. As an example, level 1 of the game contains 2 challenges because notebook 1 has 2 exercises, while level 2 of the game contains 3 challenges because notebook 2 has 3 exercises.
 
 Think step by step on how to implement this and suggest code edits with complete blocks so that the changes are easy to copy paste.
 
@@ -82,10 +86,6 @@ I want to edit  my component @/components/Challenge.tsx with the following instr
 </instructions>
 -------------------------------------------------
 
-#one-liner
+#one-liners
 npx ai-digest -i . -o pe-game-summary-work.md --show-output-files && mv pe-game-summary-work.md /mnt/c/Users/W36059/Desktop/
 
-
-
-#problems
-2.5 levels? its supposed a third ex in level 2 (ex 2.3)
