@@ -95,3 +95,19 @@ body {
   transition-timing-function: ease-in-out;
 }
 
+/* Add these at the bottom of your existing globals.css */
+
+@keyframes wrong-answer {
+  0%, 100% { 
+    background-color: transparent;
+    border-color: var(--border);
+  }
+  50% { 
+    background-color: rgb(254 226 226 / 0.5);
+    border-color: rgb(239 68 68);
+  }
+}
+
+.animate-wrong-answer {
+  animation: wrong-answer 0.5s ease-in-out;
+}

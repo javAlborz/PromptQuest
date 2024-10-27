@@ -21,6 +21,8 @@ Be mindful of when to inclode game-notebooks/ and not. For testing notebooks, do
 
 -Should refactor to one file each level
 
+SJEKK OM CURSOR KLARER REFACTOR ENKLERE. HVIS IKKE, START PÅ CLAUDE:LATEST
+
 
 
 (C) Backlog
