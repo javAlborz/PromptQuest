@@ -35,39 +35,6 @@ def get_completion(prompt: str, system_prompt=""):
     return message.content[0].text
 ```
 
-    Requirement already satisfied: anthropic in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (0.35.0)
-    Requirement already satisfied: anyio<5,>=3.5.0 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from anthropic) (4.6.0)
-    Requirement already satisfied: httpx<1,>=0.23.0 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from anthropic) (0.27.2)
-    Requirement already satisfied: pydantic<3,>=1.9.0 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from anthropic) (2.9.2)
-    Requirement already satisfied: tokenizers>=0.13.0 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from anthropic) (0.20.0)
-    Requirement already satisfied: jiter<1,>=0.4.0 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from anthropic) (0.5.0)
-    Requirement already satisfied: distro<2,>=1.7.0 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from anthropic) (1.9.0)
-    Requirement already satisfied: typing-extensions<5,>=4.7 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from anthropic) (4.12.2)
-    Requirement already satisfied: sniffio in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from anthropic) (1.3.1)
-    Requirement already satisfied: idna>=2.8 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from anyio<5,>=3.5.0->anthropic) (3.10)
-    Requirement already satisfied: exceptiongroup>=1.0.2 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from anyio<5,>=3.5.0->anthropic) (1.2.2)
-    Requirement already satisfied: httpcore==1.* in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from httpx<1,>=0.23.0->anthropic) (1.0.6)
-    Requirement already satisfied: certifi in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from httpx<1,>=0.23.0->anthropic) (2024.8.30)
-    Requirement already satisfied: h11<0.15,>=0.13 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from httpcore==1.*->httpx<1,>=0.23.0->anthropic) (0.14.0)
-    Requirement already satisfied: pydantic-core==2.23.4 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from pydantic<3,>=1.9.0->anthropic) (2.23.4)
-    Requirement already satisfied: annotated-types>=0.6.0 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from pydantic<3,>=1.9.0->anthropic) (0.7.0)
-    Requirement already satisfied: huggingface-hub<1.0,>=0.16.4 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from tokenizers>=0.13.0->anthropic) (0.25.1)
-    Requirement already satisfied: packaging>=20.9 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from huggingface-hub<1.0,>=0.16.4->tokenizers>=0.13.0->anthropic) (24.1)
-    Requirement already satisfied: tqdm>=4.42.1 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from huggingface-hub<1.0,>=0.16.4->tokenizers>=0.13.0->anthropic) (4.66.5)
-    Requirement already satisfied: fsspec>=2023.5.0 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from huggingface-hub<1.0,>=0.16.4->tokenizers>=0.13.0->anthropic) (2024.9.0)
-    Requirement already satisfied: filelock in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from huggingface-hub<1.0,>=0.16.4->tokenizers>=0.13.0->anthropic) (3.16.1)
-    Requirement already satisfied: pyyaml>=5.1 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from huggingface-hub<1.0,>=0.16.4->tokenizers>=0.13.0->anthropic) (6.0.2)
-    Requirement already satisfied: requests in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from huggingface-hub<1.0,>=0.16.4->tokenizers>=0.13.0->anthropic) (2.32.3)
-    Requirement already satisfied: charset-normalizer<4,>=2 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from requests->huggingface-hub<1.0,>=0.16.4->tokenizers>=0.13.0->anthropic) (3.3.2)
-    Requirement already satisfied: urllib3<3,>=1.21.1 in /home/alborz/pe-game3/venv/lib/python3.10/site-packages (from requests->huggingface-hub<1.0,>=0.16.4->tokenizers>=0.13.0->anthropic) (2.2.3)
-
-
-    /home/alborz/pe-game3/venv/lib/python3.10/site-packages/IPython/extensions/storemagic.py:148: UserWarning: This is now an optional IPython functionality, using autorestore/API_KEY requires you to install the `pickleshare` library.
-      obj = db["autorestore/" + arg]
-    /home/alborz/pe-game3/venv/lib/python3.10/site-packages/IPython/extensions/storemagic.py:148: UserWarning: This is now an optional IPython functionality, using autorestore/MODEL_NAME requires you to install the `pickleshare` library.
-      obj = db["autorestore/" + arg]
-
-
 ---
 
 ## Lesson
@@ -95,18 +62,12 @@ Let's take a look at how Claude responds to some correctly-formatted prompts. Fo
 
 
 ```python
-API_KEY = os.getenv('ANTHROPIC_API_KEY')
-MODEL_NAME = "claude-3-haiku-20240307"
-
 # Prompt
 PROMPT = "Hi Claude, how are you?"
 
 # Print Claude's response
 print(get_completion(PROMPT))
 ```
-
-    I'm doing well, thanks for asking! As an AI assistant, I don't have feelings in the same way humans do, but I'm functioning properly and ready to assist you with any questions or tasks you may have. How can I help you today?
-
 
 
 ```python
@@ -116,19 +77,6 @@ PROMPT = "Can you tell me the color of the ocean?"
 # Print Claude's response
 print(get_completion(PROMPT))
 ```
-
-    The color of the ocean can vary depending on a number of factors, but generally the ocean appears blue or bluish-green. Some key points about the color of the ocean:
-    
-    - The primary reason the ocean appears blue is due to the way water interacts with sunlight. Water absorbs more of the red, orange, and yellow wavelengths of light, while reflecting the blue wavelengths back, making the ocean appear blue.
-    
-    - The exact shade of blue can range from a deep navy blue to a lighter, more turquoise blue. This can depend on factors like the depth of the water, the amount of suspended particles, and the angle of the sunlight.
-    
-    - In shallow, coastal waters, the ocean may appear more greenish-blue or turquoise due to the presence of algae, sediment, and other materials reflecting different wavelengths of light.
-    
-    - In some areas, the ocean can appear more gray or even black, especially in areas with high levels of pollution or plankton.
-    
-    So in summary, the typical color of the open ocean is some variation of blue, but it can range from deep navy to lighter turquoise shades depending on the specific environmental conditions. The color is primarily a result of the way water interacts with sunlight.
-
 
 
 ```python

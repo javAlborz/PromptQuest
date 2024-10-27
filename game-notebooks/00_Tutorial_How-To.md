@@ -18,19 +18,8 @@ This tutorial **requires an API key** for interaction. If you don't have an API 
 
 
 ```python
-import os
-from dotenv import load_dotenv
-
-# Load environment variables from the .env file
-load_dotenv()
-
-# Access the variables
-API_KEY = os.getenv('ANTHROPIC_API_KEY')
+API_KEY = "your_api_key_here"
 MODEL_NAME = "claude-3-haiku-20240307"
-
-print("API Key:", API_KEY)
-print("Model Name:", MODEL_NAME)
-
 
 # Stores the API_KEY & MODEL_NAME variables for use across notebooks within the IPython store
 %store API_KEY

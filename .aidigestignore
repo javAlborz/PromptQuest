@@ -1,13 +1,5 @@
 ToDo.txt
-
-# Configuration files
-postcss.config.mjs
-tailwind.config.ts
-tsconfig.json
-next.config.mjs
-next-env.d.ts
-components.json
-.eslintrc.json
+claude-instructions.md
 
 # Assets
 app/favicon.ico
@@ -34,5 +26,5 @@ Thumbs.db
 
 
 venv/
+Anthropic-tutorials/
 game-notebooks/
-game-notebooks-md/
