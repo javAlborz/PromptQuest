@@ -1,9 +1,8 @@
-// src/components/game/GameStatus.tsx
 'use client';
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/src/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/src/components/ui/card";
 
 interface GameStatusProps {
   status: "won" | "lost";

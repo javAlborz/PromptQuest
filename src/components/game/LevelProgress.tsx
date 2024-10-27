@@ -1,9 +1,8 @@
-// src/components/game/LevelProgress.tsx
 'use client';
 
 import React from 'react';
+import { Button } from "@/src/components/ui/button";
 import { Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface LevelProgressProps {
   currentLevel: number;

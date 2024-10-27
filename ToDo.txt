@@ -91,6 +91,22 @@ I want to edit  my component @/components/Challenge.tsx with the following instr
 
 
 </instructions>
+
+
+This is my repository tree>
+
+src/
+├── components/
+│   ├── game/         # Game-specific components
+│   ├── ui/           # Reusable UI components
+│   └── index.ts      # Clean exports
+├── data/             # Game data and challenges
+├── hooks/            # Custom React hooks
+├── services/         # API and external services
+├── types/            # TypeScript definitions
+└── utils/            # Utility functions
+
+
 -------------------------------------------------
 
 (D) one-liners

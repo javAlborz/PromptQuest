@@ -1,8 +1,7 @@
-// src/components/game/AdminControls.tsx
 'use client';
 
 import React from 'react';
-import { Select } from "@/components/ui/select";
+import { Button } from "@/src/components/ui/button";
 
 interface AdminControlsProps {
   isAdminMode: boolean;
@@ -11,12 +10,8 @@ interface AdminControlsProps {
   onLevelChange: (level: number) => void;
 }
 
-export const AdminControls: React.FC<AdminControlsProps> = ({
-  isAdminMode,
-  currentLevel,
-  totalLevels,
-  onLevelChange,
-}) => {
+// Keep the named export to match the existing import in TextAdventureGame
+export function AdminControls({ isAdminMode, currentLevel, totalLevels, onLevelChange }: AdminControlsProps) {
   if (!isAdminMode) return null;
 
   return (
@@ -38,4 +33,4 @@ export const AdminControls: React.FC<AdminControlsProps> = ({
       </select>
     </div>
   );
-};
+}

@@ -1,11 +1,12 @@
-// src/components/game/Challenge.tsx
 'use client';
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/src/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { ChallengePrompt } from './ChallengePrompt';
 import { ChallengeResponse } from './ChallengeResponse';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Lock } from 'lucide-react';
 
 interface ChallengeProps {
   question: string;
@@ -61,7 +62,7 @@ export const Challenge: React.FC<ChallengeProps> = ({
       isCorrect && apiResponse 
         ? 'bg-green-100 dark:bg-green-900/20 border-green-500' 
         : apiResponse && !isPending
-          ? 'animate-wrong-answer border-red-500' 
+          ? 'animate-wrong-answer bg-red-100 dark:bg-red-900/20' 
           : 'border-gray-200 dark:border-gray-800'
     }`}>
       <CardHeader>

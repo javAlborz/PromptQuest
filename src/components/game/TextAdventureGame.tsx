@@ -1,16 +1,16 @@
-// src/components/game/TextAdventureGame.tsx
 'use client';
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
+import { Button } from "@/src/components/ui/button";
 import { Challenge } from './Challenge';
 import { LevelProgress } from './LevelProgress';
 import { AdminControls } from './AdminControls';
 import { GameStatus } from './GameStatus';
 import { useGameState } from '@/src/hooks/useGameState';
 import { levels, getChallengesPerLevel } from '@/src/data/challenges';
-import ClientOnly from '@/components/ClientOnly';
+import ClientOnly from '@/src/components/ClientOnly';
 import type { Challenge as ChallengeType } from '@/src/types/game';
+
 
 export const TextAdventureGame = () => {
   const {

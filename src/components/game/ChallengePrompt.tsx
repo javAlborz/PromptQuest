@@ -1,9 +1,8 @@
-// src/components/game/ChallengePrompt.tsx
 'use client';
 
 import React, { useRef, useEffect } from 'react';
-import { Textarea } from "@/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Textarea } from "@/src/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { Lock } from 'lucide-react';
 
 interface ChallengePromptProps {
