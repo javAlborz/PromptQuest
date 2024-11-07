@@ -1,6 +1,7 @@
 // src/hooks/useGameState.ts
 import { useState, useCallback, useEffect } from 'react';
 import { Level, Challenge } from '@/src/types/game';
+import { validationService } from '@/src/services/validation';
 
 interface GameState {
   currentLevel: number;
@@ -68,6 +69,7 @@ export const useGameState = (levels: Level[]) => {
     }));
 
     try {
+      // Get Claude's response first
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -113,21 +115,25 @@ export const useGameState = (levels: Level[]) => {
           }
         }
 
+        // Now validate the response using the validation service
         const challenge = levels[levelIndex].challenges[challengeIndex];
-        const isAnswerCorrect = challenge.evaluation(fullResponse);
+        const validationResult = await validationService.validateChallenge(
+          fullResponse,
+          challenge.validation
+        );
 
         setState(prev => {
           const newState = {
             ...prev,
             isCorrect: prev.isCorrect.map((val, i) => 
-              i === globalIndex ? isAnswerCorrect : val
+              i === globalIndex ? validationResult.isCorrect : val
             ),
             isPending: prev.isPending.map((val, i) => 
               i === globalIndex ? false : val
             )
           };
 
-          if (!isAnswerCorrect && !prev.isAdminMode) {
+          if (!validationResult.isCorrect && !prev.isAdminMode) {
             newState.lives = prev.lives - 1;
             if (newState.lives === 0) {
               newState.gameStatus = 'lost';
@@ -139,6 +145,15 @@ export const useGameState = (levels: Level[]) => {
       }
     } catch (error) {
       console.error('Error:', error);
+      setState(prev => ({
+        ...prev,
+        isCorrect: prev.isCorrect.map((val, i) => 
+          i === globalIndex ? false : val
+        ),
+        isPending: prev.isPending.map((val, i) => 
+          i === globalIndex ? false : val
+        )
+      }));
     } finally {
       setState(prev => ({
         ...prev,
@@ -148,6 +163,7 @@ export const useGameState = (levels: Level[]) => {
       }));
     }
   }, [state.userPrompts, state.systemPrompts, state.isAdminMode, levels, getChallengeIndex, countWords]);
+
 
   const resetGame = useCallback(() => {
     setState({

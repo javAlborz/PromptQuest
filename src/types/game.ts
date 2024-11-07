@@ -1,10 +1,18 @@
+// src/types/game.ts
+
+export interface ValidationStrategy {
+  type: 'pattern' | 'llm';
+  pattern?: RegExp | string;
+  evaluationPrompt?: string;
+}
+
 export interface Challenge {
   id: string;
   question: string;
   task: string;
   initialPrompt: string;
   initialSystemPrompt?: string;
-  evaluation: (response: string) => boolean;
+  validation: ValidationStrategy; 
   hint?: string;
   systemPromptPlaceholder?: string;
   userPromptPlaceholder?: string;

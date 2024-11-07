@@ -1,6 +1,6 @@
 
 (A) remember
-Be mindful of when to inclode game-notebooks/ and not. For testing notebooks, do them outside repo
+Be mindful of when to inclUde game-notebooks/ and not. For testing notebooks, do them outside repo
 
 
 
@@ -8,8 +8,6 @@ Be mindful of when to inclode game-notebooks/ and not. For testing notebooks, do
 <autocomplete the rest bc of few shot prompting on the first challenges>
     
 -Weapon/Inventory/character selection with different models as weapons. Claude 3.5 premium fee. Image of bot-character in chatresponses
-
--Word removal game ina UI in 4-3? 
 
 -Remove bottom borders on challenges with system prompts so it seems like one field
 
