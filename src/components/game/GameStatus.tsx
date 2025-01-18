@@ -18,14 +18,14 @@ export const GameStatus: React.FC<GameStatusProps> = ({ status, onResetGame }) =
         </CardTitle>
         <CardDescription>
           {status === "won"
-            ? "You've mastered all the prompt engineering challenges!"
-            : "You've run out of lives. Keep practicing and try again!"}
+            ? "You&apos;ve mastered all the prompt engineering challenges!"
+            : "You&apos;ve run out of lives. Keep practicing and try again!"}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {status === "won" && (
           <p className="text-sm text-gray-600 mb-4">
-            You've demonstrated excellent prompt engineering skills. Feel free to play again to practice different approaches!
+            You&apos;ve demonstrated excellent prompt engineering skills. Feel free to play again to practice different approaches!
           </p>
         )}
       </CardContent>
