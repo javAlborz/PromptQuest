@@ -1,6 +1,6 @@
 // src/hooks/useGameState.ts
-import { useState, useCallback, useEffect } from 'react';
-import { Level, Challenge } from '@/src/types/game';
+import { useState, useCallback } from 'react';
+import { Level } from '@/src/types/game';
 import { validationService } from '@/src/services/validation';
 
 interface GameState {
@@ -162,7 +162,7 @@ export const useGameState = (levels: Level[]) => {
         )
       }));
     }
-  }, [state.userPrompts, state.systemPrompts, state.isAdminMode, levels, getChallengeIndex, countWords]);
+  }, [state.userPrompts, state.systemPrompts, levels, getChallengeIndex, countWords]);
 
 
   const resetGame = useCallback(() => {

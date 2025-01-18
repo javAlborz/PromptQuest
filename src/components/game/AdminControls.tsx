@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Button } from "@/src/components/ui/button";
 
 interface AdminControlsProps {
   isAdminMode: boolean;

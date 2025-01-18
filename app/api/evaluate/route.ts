@@ -5,11 +5,6 @@ import { NextResponse } from 'next/server';
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const API_URL = 'https://api.anthropic.com/v1/messages';
 
-interface ValidationResult {
-  isCorrect: boolean;
-  reason?: string;
-}
-
 export async function POST(req: Request) {
   if (!ANTHROPIC_API_KEY) {
     throw new Error('ANTHROPIC_API_KEY is not set');

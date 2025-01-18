@@ -5,8 +5,6 @@ import { Button } from "@/src/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { ChallengePrompt } from './ChallengePrompt';
 import { ChallengeResponse } from './ChallengeResponse';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
-import { Lock } from 'lucide-react';
 
 interface ChallengeProps {
   question: string;
