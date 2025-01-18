@@ -1,4 +1,6 @@
-import React, { useEffect, useState, ReactNode } from 'react'
+'use client';
+
+import React, { useEffect, useState, ReactNode } from 'react';
 
 interface ClientOnlyProps {
   children: ReactNode;
@@ -20,5 +22,5 @@ export default function ClientOnly({ children, className }: ClientOnlyProps) {
     <div className={className}>
       {children}
     </div>
-  )
+  );
 }
