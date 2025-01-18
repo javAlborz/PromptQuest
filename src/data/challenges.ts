@@ -56,7 +56,7 @@ const beingClearDirectChallenges: Challenge[] = [
   The response must meet ALL of the following criteria with NO exceptions:
   
   1. Contains exactly one basketball player's name (current or historical)
-  2. Has ZERO punctuation marks of any kind (no periods, commas, exclamation marks, etc.)
+  2. Has ZERO punctuation marks of any kind (no periods, commas, exclamation marks, etc.) Spaces are okay though.
   
   If ANY of these criteria are not met EXACTLY, return {"isCorrect": false}.
   Only return {"isCorrect": true} if ALL criteria are met perfectly.
